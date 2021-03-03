@@ -3,7 +3,7 @@
 
 int executeAction(int status, MasterList* masterls)
 {
-  int message_key = 0;
+  key_t message_key = 0;
   time_t T = time(NULL);
   pid_t pid;
   int retVal=0;

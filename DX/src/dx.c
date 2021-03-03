@@ -34,8 +34,9 @@ int main(int argc, char* argv[])
 
  time_t T = time(NULL);
 
- 	//message queue
- 	shmKey = ftok (".", 'M');
+ 	//get key of shared-memory ID
+ 	shmKey = ftok (".", 16535);
+	printf("shmkey: %d\n", shmKey);
 	if (shmKey == -1) 
 	{ 
 	  printf ("(CLIENT) Cannot create key!\n");
@@ -71,27 +72,33 @@ int main(int argc, char* argv[])
 	}
   	//*
 
+	//get message key
+	message_key = ftok (".", 'M');
+	if (message_key == -1) 
+	{ 
+          printf ("(CLIENT) Cannot create key!\n");
+	  fflush (stdout);
+	  return 0;
+	}
+
  	//main process loop
 	 while(1)
 	 {
+	   //get random amount of time
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
+	   //go to sleep for random amount of time(between 10 and 30 secs)
 	   sleep(randSleep);
-	   message_key = ftok (".", 'M');
-	   if (message_key == -1) 
-	   { 
-	     printf ("(CLIENT) Cannot create key!\n");
-	     fflush (stdout);
-	     return 0;
-	   }
-
-
+	   
+	   //check for existence of message queue(between DC's and DR)
 	   msgmid = msgget (message_key, 0);
 	   if (msgmid == -1) 
 	   {
 		tm = *localtime(&T);
 		createLogMsgWOD(tm, 0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
-		  break;
+		  break;	//or return 1;
 	   }
+
+	   //get random number of action(Wheel of Destruction)
 	   iStatus = rand() % 21;
 	   retVal = executeAction(iStatus, p);
 	   if(retVal == 1)

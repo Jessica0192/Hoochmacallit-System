@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
  int iStatus=0;
  int randSleep=0;
 
- //*create function get message_key "getQueueKey()"
+ 	//*create function get message_key "getQueueKey()"
  	msgKey = ftok (".", 'M');
 	if (msgKey == -1) 
 	{ 
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 	  fflush (stdout);
 	  return 0;
 	}
-
+	printf("msgkey: %d\n", msgKey);
 	// check if the msg queue already exists
 	while(1)
 	{
