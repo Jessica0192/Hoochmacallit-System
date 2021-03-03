@@ -1,0 +1,32 @@
+#include "../inc/dc.h"
+
+char* getStatus(int status)
+{
+  switch(status)
+  {
+	  case EVERYTHING_OK:
+		return "Everything is OKAY";
+	  case HYDRAULIC_FAIL:
+		return "Hydraulic Pressure Failure";
+	  case SAFETY_BTN_FAIL:
+		return "Safety Button Failure";
+	  case NO_RAW_MATERIAL:
+		return "No Raw Material in the Process";
+	  case OPERATING_TEMP_OUT_OF_RANGE:
+	 	return "Operating Temparature Out of Range";
+	  case OPERATOR_ERR:
+		return "Operator Error";
+	  case MACHINE_OFF_LINE:
+		return "Machine is Off-line";
+  }
+}
+
+void send_message (int mid)
+{
+	DCMessage sendMsg;
+	int sizeofdata = sizeof (DCMessage) - sizeof (long);
+        sendMsg.type = TYPE_SERVERMESSAGE;
+
+	// send the message to server
+	msgsnd (mid, (void *)&sendMsg, sizeofdata, 0);
+}
