@@ -37,7 +37,7 @@ typedef struct
 	long type;
 
 	// now the specifics of our message
-	int magQueueID;
+	int msgQueueID;
 	int numberOfDCs;
 	DCInfo dc[MAX_DC_ROLES];
 	
@@ -55,4 +55,4 @@ typedef struct
 } DCMessage;
 
 char* getStatus(int status);
-void send_message (int mid);
+int send_message (int mid, pid_t pid, char* msg);

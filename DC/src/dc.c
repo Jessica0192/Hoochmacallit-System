@@ -14,14 +14,16 @@
 
 int main(int argc, char* argv[])
 {
- DCInfo dcinfo;
- DCMessage dcmsg;
+ //DCMessage dcmsg;
+ MasterList msList;
  key_t msgKey;	//message key
  int mid; // message ID
  int counter=0;
  char* strStatus = NULL;
  int iStatus=0;
  int randSleep=0;
+ pid_t machinePID;
+ char* msg;
 
  	//*create function get message_key "getQueueKey()"
  	msgKey = ftok (".", 'M');
@@ -35,6 +37,11 @@ int main(int argc, char* argv[])
 	// check if the msg queue already exists
 	while(1)
 	{
+		if(msList.numberOfDCs == 10)
+		{
+		  printf("There are already maximum DCs present(max 10)\n");
+		  return 1;
+		}
 		mid = msgget (msgKey, 0);
 		if (mid == -1) 
 		{
@@ -52,17 +59,20 @@ int main(int argc, char* argv[])
 	 while(1)
 	 {
 	   counter++;
-	   dcmsg.machinePID = getpid();  
+	   machinePID = getpid();  	//dcmsg.machinePID
 	   if(counter == 1)
 	   {   
-	     dcmsg.msg = getStatus(0);
-	     send_message(mid);
+	     msg = getStatus(0);	//dcmsg.msg
+	     send_message(mid, machinePID, msg);
 	   }
 	   else
 	   {
 	     iStatus = rand() % 7;
-	     dcmsg.msg = getStatus(iStatus);
-	     send_message(mid);
+	     msg = getStatus(iStatus);		//dcmsg.msg
+	     if(send_message(mid, machinePID, msg) == 1)
+	     {
+		return 1;
+	     }
 	     if(iStatus == 6)
 	     {
 	       counter = 0;
@@ -73,5 +83,6 @@ int main(int argc, char* argv[])
 	   sleep(randSleep);
 	 }
 
+ 
  return 0;
 }

@@ -21,12 +21,19 @@ char* getStatus(int status)
   }
 }
 
-void send_message (int mid)
+int send_message (int mid, pid_t pid, char* msg)
 {
 	DCMessage sendMsg;
 	int sizeofdata = sizeof (DCMessage) - sizeof (long);
         sendMsg.type = TYPE_SERVERMESSAGE;
+	sendMsg.machinePID = pid;
+	sendMsg.msg = msg;
 
 	// send the message to server
-	msgsnd (mid, (void *)&sendMsg, sizeofdata, 0);
+	if(msgsnd (mid, (void *)&sendMsg, sizeofdata, 0) == -1)
+	{
+	   printf("Error in msgsnd\n");
+	   return 1;
+	}
+  	return 0;
 }
