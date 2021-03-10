@@ -25,11 +25,59 @@ int main(int argc, char* argv[])
  pid_t machinePID;
  char* msg;
 
+ //socket
+ int my_server_socket;
+ char* recvBuff;
+ struct sockaddr_in server_addr;
+ struct hostent* host;
+
+	//if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0)
+	//{
+	  //printf("Error: Could not create socket\n");
+	  //return 1;
+	//}
+
+	//if((host = gethostbyname("127.0.0.1")) == NULL)		//host: 127.0.0.1
+	//{
+	  //printf("[CLIENT] Host Info Search - FAILED\n");
+	//}
+
+	/*
+ 	 * initialize struct to get a socket to host
+	 */
+	//memset (&server_addr, 0, sizeof (server_addr));
+	//server_addr.sin_family = AF_INET;
+	//memcpy (&server_addr.sin_addr, host->h_addr, host->h_length);
+	//server_addr.sin_port = htons (8080);
+
+	/*
+      	* get a socket for communications
+      	*/
+	//printf ("[CLIENT] : Getting STREAM Socket to talk to SERVER\n");
+	//fflush(stdout);
+        //if ((my_server_socket = socket (AF_INET, SOCK_STREAM, 0)) < 0) 
+        //{
+          //printf ("[CLIENT] : Getting Client Socket - FAILED\n");
+          //return 3;
+        //}
+
+	/*
+         * attempt a connection to server
+         */
+	//printf ("[CLIENT] : Connecting to SERVER\n");
+	//fflush(stdout);
+        //if (connect (my_server_socket, (struct sockaddr *)&server_addr,sizeof    (server_addr)) < 0) 
+     	//{
+       	  //printf ("[CLIENT] : Connect to Server - FAILED\n");
+          //close (my_server_socket);
+          //return 4;
+        //}
+
  	//*create function get message_key "getQueueKey()"
  	msgKey = ftok (".", 'M');
 	if (msgKey == -1) 
 	{ 
-	  printf ("(CLIENT) Cannot create key!\n");
+	  printf ("[CLIENT] Cannot create key!\n");
 	  fflush (stdout);
 	  return 0;
 	}
@@ -76,6 +124,8 @@ int main(int argc, char* argv[])
 	     if(iStatus == 6)
 	     {
 	       counter = 0;
+	       //clean up - closing socket
+	       close(my_server_socket);
 	       break;
 	     }
 	   }
