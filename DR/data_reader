@@ -177,10 +177,10 @@ int main(void)
             else
             {
                
-                printf(log_stream, "%s", new_dc_log);
+                fprintf(log_stream, "%s", new_dc_log);
                 MasterList->msgQueueID = mid;
                 DC_count = ++MasterList->numberOfDCs;
-                MasterList->dc[DC_count].dcProcessID = (pid_t) msg.; //what to do here?
+               // MasterList->dc[DC_count].dcProcessID = (pid_t) msg.; //what to do here?
                  //strcat(new_dc_log, dc_id);
                  //strcat(new_dc_log, dc_pid);
                  //strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OOKAY)");
