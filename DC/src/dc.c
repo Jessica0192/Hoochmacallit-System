@@ -15,9 +15,13 @@
 int main(int argc, char* argv[])
 {
  //DCMessage dcmsg;
- MasterList msList;
+ MasterList* msList;
+
  key_t msgKey;	//message key
+ key_t shmKey;  //share memory key
  int mid; // message ID
+ int shmid; //share memory ID
+
  int counter=0;
  char* strStatus = NULL;
  int iStatus=0;
@@ -28,7 +32,7 @@ int main(int argc, char* argv[])
  pid_t pid;
 
  //socket
- int my_server_socket;
+ //int my_server_socket;
  char* recvBuff;
  //struct sockaddr_in server_addr;
  //struct hostent* host;
@@ -88,11 +92,6 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		mid = msgget (msgKey, 0);
-		if(msList.numberOfDCs == 10)
-		{
-		  printf("There are already maximum DCs present(max 10)\n");
-		  return 1;
-		}
 
 		if (mid == -1) 
 		{
@@ -101,6 +100,32 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+		  shmKey = ftok(".", 16535);
+		  if (shmKey == -1) 
+	          { 
+	  		printf ("(CLIENT) Cannot allocate key\n");
+	  		return 1;
+	          }
+
+		  if ((shmid = shmget (shmKey, sizeof (MasterList), 0)) == -1) 
+		  {
+			printf ("(CLIENT) Shared-Memory doesn't exist. run the PRODUCER!\n");
+			return 2;
+	     	  }
+
+		  msList = (MasterList *)shmat (shmid, NULL, 0);
+	  	  if (msList == NULL) 
+		  {
+	  		printf ("(CLIENT) Cannot attach to Shared-Memory!\n");
+	  		return 3;
+		  }
+
+		  int localnumDCs = msList->numberOfDCs;
+		  if(localnumDCs == 10)
+		  {
+		    printf("There are already maximum DCs present(max 10)\n");
+		    return 1;
+		  }
 		printf ("(CLIENT) Message queue ID: %d\n\n\n", mid);
 		  break;
 		}
@@ -129,7 +154,7 @@ int main(int argc, char* argv[])
 	     {
 	       counter = 0;
 	       //clean up - closing socket
-	       close(my_server_socket);
+	       //close(my_server_socket);
 	       break;
 	     }
 	   }

@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+
 #pragma warning (disable: 4996)
 #define FIRST_SLEEP 15
 #define LAST_SLEEP 1.5
@@ -34,6 +35,8 @@
 #define CLIENT_2_MSG	1
 
 #define _CRT_SECURE_NO_WARNINGS
+
+
 
 typedef struct  
 {
@@ -80,14 +83,16 @@ int main(void)
     int mid; // message queue ID
     int sizeofdata;
     int continueToRun = 1;
-    
+   
+
     key_t message_key;
     MasterList masterls;
   //  MasterList response;
     FILE* log_stream;
 
-    if ((log_stream = fopen("server_log.txt", "w")) == NULL) {
+    if ((log_stream = fopen("server_log.txt", "w+")) == NULL) {
             fprintf(stderr, "%s: %s\n", "Impossible to create a file", "server_log.txt");
+	    printf("Error opening file\n");
             return -1;
         }
 
@@ -132,6 +137,9 @@ printf("message_key:%d\n", message_key);
     printf ("(SERVER) Message queue ID: %d\n\n", mid);
     fflush (stdout);
     masterls.msgQueueID = mid;
+
+    //msgctl (mid, IPC_RMID, NULL);
+    //return 1;
 
     //now create (or find a) shared mem obj
     //the function will retunr -1 if the sys
@@ -180,21 +188,25 @@ printf("message_key:%d\n", message_key);
 
    // time(&start_t);
    int DC_count = 0;
+   int localNumDCs = 0;
    char new_dc_log[255];
    char rem_dc_log[255];
+   char strCount[5] = {0};		//string count of DCs when writing to file
+   char strProcessID[20] = {0};		//string processID when writing to file
    memset(new_dc_log ,0, sizeof(new_dc_log));
    memset(rem_dc_log ,0, sizeof(rem_dc_log));
-   strcpy(new_dc_log, "DC- ");
-   strcpy(rem_dc_log, "DC- ");
   // time_t strart = time(NULL);
   DCMessage incom_msg;
 
   time_t rawtime;
   struct tm* timeinfo;
 
+
   //MAIN LOOP
     while (1)
         {
+	   memset(strCount, 0, sizeof(strCount));
+	   memset(strProcessID,0,sizeof(strProcessID));
 
             printf ("(SERVER) Waiting for a message ...\n");
              
@@ -207,6 +219,7 @@ printf("message_key:%d\n", message_key);
 		printf("incom_msg pid: %d\n", incom_msg.machinePID);
 		printf("incom_msg msg: %s\n", incom_msg.msg);
 		printf("rc: %d\n", rc);
+
             if (rc == -1) 
             {
                 printf("(SERVER) Error occured while trying to receive a message...");
@@ -216,8 +229,14 @@ printf("message_key:%d\n", message_key);
 
                if (seconds == 35)
                {
-                masterls.numberOfDCs--;
+		localNumDCs--;
+                masterls.numberOfDCs = localNumDCs;
                 seconds = 0; //reset
+		
+		sprintf(strCount, "%d", masterls.numberOfDCs);
+		sprintf(strProcessID, "%d", masterls.dc[DC_count].dcProcessID);
+
+		strcpy(rem_dc_log, "DC- ");
                 strcat(rem_dc_log, DC_count);
                 strcat(rem_dc_log, " [");
                 strcat(rem_dc_log, masterls.dc[DC_count].dcProcessID);
@@ -230,20 +249,25 @@ printf("message_key:%d\n", message_key);
             }
             else
             {
-               
-                fprintf(log_stream, "%s\n", new_dc_log);
                 masterls.msgQueueID = mid;
-		masterls.numberOfDCs +=1;
+		localNumDCs++;
+		masterls.numberOfDCs = localNumDCs;
 		printf("numbofdc: %d\n", masterls.numberOfDCs);
                 //pid t DCMessage.ID
                 masterls.dc[DC_count].dcProcessID = (pid_t) incom_msg.machinePID; //what to do here?
-		//sprintf(DC_count, "%d", masterls.numberOfDCs);
-                strcat(new_dc_log, masterls.numberOfDCs);
+
+		sprintf(strCount, "%d", masterls.numberOfDCs);
+		sprintf(strProcessID, "%d", masterls.dc[DC_count].dcProcessID);
+
+		strcpy(new_dc_log, "DC- ");
+                strcat(new_dc_log, strCount);
                 strcat(new_dc_log, " [");
-                strcat(new_dc_log, masterls.dc[DC_count].dcProcessID);
+                strcat(new_dc_log, strProcessID);
                 strcat(new_dc_log, "]");
                 strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OOKAY)");
+		printf("%s\n", new_dc_log);
                 fprintf(log_stream, "%s\n", new_dc_log);
+		fflush(log_stream);
                 time(&rawtime);
 	            timeinfo = localtime(&rawtime);
                 masterls.dc[DC_count].lastTimeHeardFrom =  asctime(timeinfo);
@@ -251,9 +275,9 @@ printf("message_key:%d\n", message_key);
             }
 
             start = clock();
-             
+            memset(new_dc_log,0,sizeof(new_dc_log)); 
             
-             //printf("%.2f\n", (double) (time(NULL) - start));
+            printf("%.2f\n", (double) (time(NULL) - start));
 
           sleep(LAST_SLEEP);
 	}
@@ -267,6 +291,7 @@ printf("message_key:%d\n", message_key);
     msgctl (mid, IPC_RMID, NULL);
     printf ("(SERVER) Message QUEUE has been removed\n");
     fflush (stdout);
+    fclose(log_stream);
 
 	return 0;
 }
