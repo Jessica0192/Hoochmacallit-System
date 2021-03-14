@@ -50,7 +50,7 @@ typedef struct
 
 	// now the specifics of our message
 	pid_t machinePID;
-	char* msg;
+	char msg[100];
 	
 } DCMessage;
 

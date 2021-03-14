@@ -25,11 +25,13 @@ int main(int argc, char* argv[])
  pid_t machinePID;
  char* msg;
 
+ pid_t pid;
+
  //socket
  int my_server_socket;
  char* recvBuff;
- struct sockaddr_in server_addr;
- struct hostent* host;
+ //struct sockaddr_in server_addr;
+ //struct hostent* host;
 
 	//if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0)
 	//{
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
         //}
 
  	//*create function get message_key "getQueueKey()"
- 	msgKey = ftok (".", 'M');
+ 	msgKey = ftok ("../../", 'M');
 	if (msgKey == -1) 
 	{ 
 	  printf ("[CLIENT] Cannot create key!\n");
@@ -85,12 +87,13 @@ int main(int argc, char* argv[])
 	// check if the msg queue already exists
 	while(1)
 	{
+		mid = msgget (msgKey, 0);
 		if(msList.numberOfDCs == 10)
 		{
 		  printf("There are already maximum DCs present(max 10)\n");
 		  return 1;
 		}
-		mid = msgget (msgKey, 0);
+
 		if (mid == -1) 
 		{
 		  printf("(DC)Waiting\n");
@@ -98,6 +101,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+		printf ("(CLIENT) Message queue ID: %d\n\n\n", mid);
 		  break;
 		}
 	}

@@ -7,6 +7,7 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <unistd.h>
 #pragma warning (disable: 4996)
 #define FIRST_SLEEP 15
 #define LAST_SLEEP 1.5
@@ -31,6 +32,8 @@
 #define TERM_CLIENT	6
 
 #define CLIENT_2_MSG	1
+
+#define _CRT_SECURE_NO_WARNINGS
 
 typedef struct  
 {
@@ -63,7 +66,7 @@ typedef struct
 
 	// now the specifics of our message
 	pid_t machinePID;
-	char* msg;
+	char msg[100];
 	
 } DCMessage;
 
@@ -79,7 +82,7 @@ int main(void)
     int continueToRun = 1;
     
     key_t message_key;
-    MasterList msg;
+    MasterList masterls;
   //  MasterList response;
     FILE* log_stream;
 
@@ -88,16 +91,34 @@ int main(void)
             return -1;
         }
 
+    struct stat st; 
+    int ret = stat("server_log.txt", &st);
+     if(ret != 0) {
+         return -1;
+    }   
+
+    int mode = W_OK;
+    if(access("server_log.txt", mode) ==0) {
+	printf("can write \n");
+    } 
+    else
+    {
+	printf("no permission\n");
+	return -1;
+    }
+
 
     // get the unique token for the message queue (based on some agreed 
     // upon "secret" information  
-    message_key = ftok (".", 'M');
+    message_key = ftok ("../../", 'M');
     if (message_key == -1) 
     { 
         printf ("(SERVER) Cannot create key!\n");
         fflush (stdout);
         return 1;
     }
+
+printf("message_key:%d\n", message_key);
 
     // create the message queue
     mid = msgget (message_key, IPC_CREAT | 0660);
@@ -110,7 +131,7 @@ int main(void)
 
     printf ("(SERVER) Message queue ID: %d\n\n", mid);
     fflush (stdout);
-    msg.msgQueueID = mid;
+    masterls.msgQueueID = mid;
 
     //now create (or find a) shared mem obj
     //the function will retunr -1 if the sys
@@ -159,8 +180,12 @@ int main(void)
 
    // time(&start_t);
    int DC_count = 0;
-   char new_dc_log[100] = {"DC-"};
-   char rem_dc_log[100] = {"DC-"};
+   char new_dc_log[255];
+   char rem_dc_log[255];
+   memset(new_dc_log ,0, sizeof(new_dc_log));
+   memset(rem_dc_log ,0, sizeof(rem_dc_log));
+   strcpy(new_dc_log, "DC- ");
+   strcpy(rem_dc_log, "DC- ");
   // time_t strart = time(NULL);
   DCMessage incom_msg;
 
@@ -178,8 +203,10 @@ int main(void)
 
 
            // rc = msgrcv (mid, (void *)&msg, sizeof (DCInfo), 0, 0); //DCMessage
-            rc = msgrcv(mid, (void *)&incom_msg, sizeof(DCMessage),0 ,0);
-
+            rc = msgrcv(mid, &incom_msg, new_size,0 ,0);
+		printf("incom_msg pid: %d\n", incom_msg.machinePID);
+		printf("incom_msg msg: %s\n", incom_msg.msg);
+		printf("rc: %d\n", rc);
             if (rc == -1) 
             {
                 printf("(SERVER) Error occured while trying to receive a message...");
@@ -189,11 +216,11 @@ int main(void)
 
                if (seconds == 35)
                {
-                msg.numberOfDCs--;
+                masterls.numberOfDCs--;
                 seconds = 0; //reset
                 strcat(rem_dc_log, DC_count);
                 strcat(rem_dc_log, " [");
-                strcat(rem_dc_log, MasterList->dc[DC_count].dcProcessID);
+                strcat(rem_dc_log, masterls.dc[DC_count].dcProcessID);
                 strcat(rem_dc_log, "]");
                  //strcat(new_dc_log, dc_pid);
                 strcat(new_dc_log, " removed from the master list - NON-RESPONSIVE");
@@ -204,21 +231,23 @@ int main(void)
             else
             {
                
-                fprintf(log_stream, "%s", new_dc_log);
-                MasterList->msgQueueID = mid;
-                DC_count = ++MasterList->numberOfDCs;
+                fprintf(log_stream, "%s\n", new_dc_log);
+                masterls.msgQueueID = mid;
+		masterls.numberOfDCs +=1;
+		printf("numbofdc: %d\n", masterls.numberOfDCs);
                 //pid t DCMessage.ID
-                MasterList->dc[DC_count].dcProcessID = (pid_t) incom_msg.machinePID; //what to do here?
-                strcat(new_dc_log, DC_count);
+                masterls.dc[DC_count].dcProcessID = (pid_t) incom_msg.machinePID; //what to do here?
+		//sprintf(DC_count, "%d", masterls.numberOfDCs);
+                strcat(new_dc_log, masterls.numberOfDCs);
                 strcat(new_dc_log, " [");
-                strcat(new_dc_log, MasterList->dc[DC_count].dcProcessID);
+                strcat(new_dc_log, masterls.dc[DC_count].dcProcessID);
                 strcat(new_dc_log, "]");
                 strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OOKAY)");
-                fprintf(log_stream, "%s", new_dc_log);
+                fprintf(log_stream, "%s\n", new_dc_log);
                 time(&rawtime);
 	            timeinfo = localtime(&rawtime);
-                MasterList->dc[DC_count].lastTimeHeardFrom =  asctime(timeinfo);
-                printf("\nThe number of DCs is %d\n", masterList->numberOfDCs);
+                masterls.dc[DC_count].lastTimeHeardFrom =  asctime(timeinfo);
+                printf("\nThe number of DCs is %d\n", masterls.numberOfDCs);
             }
 
             start = clock();
