@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
  int randSleep=0;
  pid_t machinePID;
  char* msg;
+ int numOfClients = 0;
 
  pid_t pid;
 
@@ -88,6 +89,8 @@ int main(int argc, char* argv[])
 	  return 0;
 	}
 	printf("msgkey: %d\n", msgKey);
+	numOfClients++;
+	printf("numOfClients: %d\n", numOfClients);
 	// check if the msg queue already exists
 	while(1)
 	{
@@ -100,28 +103,29 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-		  shmKey = ftok(".", 16535);
-		  if (shmKey == -1) 
-	          { 
-	  		printf ("(CLIENT) Cannot allocate key\n");
-	  		return 1;
-	          }
+		  //shmKey = ftok(".", 16535);
+		//printf("shmkey: %d\n", shmKey);
+		  //if (shmKey == -1) 
+	          //{ 
+	  		//printf ("(CLIENT) Cannot allocate key\n");
+	  		//return 1;
+	          //}
 
-		  if ((shmid = shmget (shmKey, sizeof (MasterList), 0)) == -1) 
-		  {
-			printf ("(CLIENT) Shared-Memory doesn't exist. run the PRODUCER!\n");
-			return 2;
-	     	  }
+		  //if ((shmid = shmget (shmKey, sizeof (MasterList), 0)) == -1) 
+		  //{
+			//printf ("(CLIENT) Shared-Memory doesn't exist. run the PRODUCER!\n");
+			//return 2;
+	     	  //}
 
-		  msList = (MasterList *)shmat (shmid, NULL, 0);
-	  	  if (msList == NULL) 
-		  {
-	  		printf ("(CLIENT) Cannot attach to Shared-Memory!\n");
-	  		return 3;
-		  }
+		 // msList = (MasterList *)shmat (shmid, NULL, 0);
+	  	  //if (msList == NULL) 
+		  //{
+	  		//printf ("(CLIENT) Cannot attach to Shared-Memory!\n");
+	  		//return 3;
+		  //}
 
-		  int localnumDCs = msList->numberOfDCs;
-		  if(localnumDCs == 10)
+		  //int localnumDCs = msList->numberOfDCs;
+		  if(numOfClients == 10)
 		  {
 		    printf("There are already maximum DCs present(max 10)\n");
 		    return 1;

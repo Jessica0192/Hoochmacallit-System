@@ -145,31 +145,55 @@ printf("message_key:%d\n", message_key);
     //the function will retunr -1 if the sys
     //is unable to create the obj
     int segment_id;
+
+    key_t shmkey;
+    int shmid;
+    MasterList* msList;
+
     char bogus;
     char* shared_memory;
     //struct shmid_ds shmbuffer;
     int segment_size;
     const int shared_segment_size = 0x6400;
     /* Allocate a shared memory segment.  */
-    segment_id = shmget (IPC_PRIVATE, shared_segment_size, IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-    /* Attach the shared memory segment.  */
-    printf("Shared memory segment ID is %d\n", segment_id);
-    shared_memory = (char*) shmat (segment_id, 0, 0);
-    printf ("shared memory attached at address %p\n", shared_memory);
+
+	shmkey = ftok ("../../", 16535);
+	if (shmkey == -1) 
+	{ 
+	  printf ("(PRODUCER) Cannot allocate key\n");
+	  return 1;
+	}
+
+
+	printf("shmkey: %d\n", shmkey);
+	if ((shmid = shmget (shmkey, sizeof (MasterList), 0)) == -1) 
+	{
+
+		/*
+		 * nope, let's create one (user/group read/write perms)
+		 */
+
+		printf ("(PRODUCER) No Shared-Memory currently available - so create!\n");
+		shmid = shmget (shmid, sizeof (MasterList), IPC_CREAT | 0660);
+		if (shmid == -1) 
+		{
+		  printf ("(PRODUCER) Cannot allocate a new memory!\n");
+		  return 2;
+		}
+	}
+
+	printf ("(PRODUCER) Our Shared-Memory ID is %d\n", shmid);
+
+	msList = (MasterList *)shmat (shmid, NULL, 0);
+	if (msList == NULL) 
+	{
+	  printf ("(PRODUCER) Cannot attach to shared memory!\n");
+	  return 3;
+	}
+
     /* Determine the segment's size. */
     printf("Message queue id is %d", mid);
-    /*
-    shmctl (segment_id, IPC_STAT, &shmbuffer);
-    segment_size  =               shmbuffer.shm_segsz;
-    printf ("segment size: %d\n", segment_size);
-    */
-    /* Write a string to the shared memory segment.  */
-    sprintf (shared_memory, "Hello, world.");
-    /* Detach the shared memory segment.  */
-    shmdt (shared_memory);
-    printf("Wrote Hello World to the segment\n");
-	
-
+  
 	//sleep for 15 seconds
 	//delay(15000);
     sleep(FIRST_SLEEP);
