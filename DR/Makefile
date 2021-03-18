@@ -7,25 +7,29 @@
 #* This file contains the operations for compiling all source
 #* found in the "cryptoMagic" directory.  This represents a sample
 #* development directory structure and project.
-#/
+#*/
 # FINAL BINARY Target
-./bin/data_reader : ./obj/data_reader.o
-	cc ./obj/data_reader.o -o ./bin/data_reader
+./bin/DRr : ./obj/DR.o
+	cc ./obj/DR.o -o ./bin/DR
 
+./bin/DR : ./obj/DR.o 
+	cc ./obj/DR.o -o ./bin/DR
 #
 # =======================================================
 #                     Dependencies
-# =======================================================
+# =======================================================          
 
-./obj/data_reader.o : ./src/data_reader.c 
-	cc -c ./src/data_reader.c -o ./obj/data_reader.o
+./obj/DR.o : ./src/DR.c ./inc/data_reader.h
+	cc -c ./src/DR.c -o ./obj/DR.o
 
 #
 # =======================================================
 # Other targets
-# =======================================================
-all : ./bin/data_reader
+# =======================================================                     
+all : ./bin/DR
 
 clean:
 	rm -f ./bin/*
 	rm -f ./obj/*.o
+	
+
