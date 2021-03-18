@@ -10,73 +10,8 @@
 #include <unistd.h>
 
 #pragma warning (disable: 4996)
-#define FIRST_SLEEP 15
-#define LAST_SLEEP 1.5
-#define TYPE_SERVERMESSAGE		1
-#define MAX_DC_ROLES 	10 
-#define OPERATION_ADD			1
-#define OPERATION_DELETE		2
-#define OPERATION_LIST			3
-#define OPERATION_EXIT			4
+#include "../inc/data_reader.h"
 
-#define OPERATION_SUCCESS		0
-#define OPERATION_DBFAILURE		1
-#define OPERATION_INVALIDDATA		2
-#define SERVER_EXIT			10
-#define DUMB_CLIENT_ERROR		999
-#define KILL_SERVER	0
-#define	GET_DATE	1
-#define GET_TIME	2
-#define GET_RND_NUM	3
-#define ADD_VALUES	4
-#define TERM_SERVER	5
-#define TERM_CLIENT	6
-
-#define CLIENT_2_MSG	1
-
-#define _CRT_SECURE_NO_WARNINGS
-
-
-
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	pid_t dcProcessID;
-	char* lastTimeHeardFrom;	//to calculate difference use "double difftime ( time_t time2, time_t time1 ); " 
-	
-} DCInfo;
-
-
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	int msgQueueID;
-	int numberOfDCs;
-	DCInfo dc[MAX_DC_ROLES];
-	
-} MasterList;
-
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	pid_t machinePID;
-	char msg[100];
-	
-} DCMessage;
-
-//key_t ftok(char* path, int id);
-int msgget(key_t key, int msgFlag);
-//int shmget(key_t key, int memSize, int memFLag);
-void delay(int milliseconds);
 
 int main(void)
 {
@@ -157,12 +92,14 @@ printf("message_key:%d\n", message_key);
     const int shared_segment_size = 0x6400;
     /* Allocate a shared memory segment.  */
 
-	shmkey = ftok ("../../", 16535);
+	// ftok to generate unique key 
+    shmkey = ftok(".", 16535); 
 	if (shmkey == -1) 
 	{ 
 	  printf ("(PRODUCER) Cannot allocate key\n");
 	  return 1;
 	}
+printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
 
 	printf("shmkey: %d\n", shmkey);
@@ -321,25 +258,4 @@ printf("message_key:%d\n", message_key);
 }
 
 
-//
-// FUNCTION : delay()
-// DESCRIPTION : This function gets the delay value
-// in milliseconds and simply performs the delay.
-// This function was retrieved on November 13, 2020
-// from https://c-for-dummies.com/blog/?p=69.
-// PARAMETERS : int milliseconds - milliseconds
-// RETURNS : NONE
-//s
-void delay(int milliseconds)
-{
-    long pause;
-    clock_t now, then;
 
-    pause = milliseconds * (CLOCKS_PER_SEC / 1000);
-    now = then = clock();
-
-    while ((now - then) < pause)
-    {
-        now = clock();
-    }
-}
