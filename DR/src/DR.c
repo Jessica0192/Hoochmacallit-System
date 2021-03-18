@@ -190,7 +190,20 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
                if (seconds == 35)
                {
+		
+		
+		
 		localNumDCs--;
+
+			//check if there are any machines left at all
+			if (localNumDCs == 0)
+			{
+				char* allDCOffMsg = "All DCs have gone offline or 					terminated – DR TERMINATING";
+				fprintf(log_stream, "%s", allDCOffMsg);
+				break;
+			}
+
+		
                 masterls.numberOfDCs = localNumDCs;
                 seconds = 0; //reset
 		
@@ -225,7 +238,7 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
                 strcat(new_dc_log, " [");
                 strcat(new_dc_log, strProcessID);
                 strcat(new_dc_log, "]");
-                strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OOKAY)");
+                strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
 		printf("%s\n", new_dc_log);
                 fprintf(log_stream, "%s\n", new_dc_log);
 		fflush(log_stream);
