@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/stat.h>
 
 #define MAX_DC_ROLES 10
 #define TYPE_SERVERMESSAGE 1
@@ -56,3 +57,4 @@ typedef struct
 
 char* getStatus(int status);
 int send_message (int mid, pid_t pid, char* msg);
+int createLog(int status, pid_t pid, char* msg, struct tm T);

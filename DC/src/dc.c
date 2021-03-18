@@ -30,6 +30,10 @@ int main(int argc, char* argv[])
  char* msg;
  int numOfClients = 0;
 
+ struct tm tm; 
+
+ time_t T = time(NULL);
+
  pid_t pid;
 
  //socket
@@ -143,7 +147,8 @@ int main(int argc, char* argv[])
 	   machinePID = getpid();  	//dcmsg.machinePID
 	   if(counter == 1)
 	   {   
-	     msg = getStatus(0);	//dcmsg.msg
+	     iStatus = 0;
+	     msg = getStatus(iStatus);	//dcmsg.msg
 	     send_message(mid, machinePID, msg);
 	   }
 	   else
@@ -162,6 +167,8 @@ int main(int argc, char* argv[])
 	       break;
 	     }
 	   }
+	   tm = *localtime(&T);
+	   createLog(iStatus, machinePID, msg, tm);
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
 	   sleep(randSleep);
 	 }

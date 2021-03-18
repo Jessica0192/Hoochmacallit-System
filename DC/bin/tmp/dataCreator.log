@@ -1,0 +1,4 @@
+[2021-03-18 02:06:59] : DC [41684] - MSG SENT - Status 0 (Everything is OKAY)
+[2021-03-18 02:06:59] : DC [41684] - MSG SENT - Status 4 (Operating Temparature Out of Range)
+[2021-03-18 02:06:59] : DC [41684] - MSG SENT - Status 5 (Operator Error)
+[2021-03-18 02:06:59] : DC [41684] - MSG SENT - Status 3 (No Raw Material in the Process)
