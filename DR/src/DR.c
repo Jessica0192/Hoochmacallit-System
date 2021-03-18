@@ -18,7 +18,8 @@ int main(void)
     int mid; // message queue ID
     int sizeofdata;
     int continueToRun = 1;
-   
+   //where we'll put address of shared memory
+   //cpmst *addr;
 
     key_t message_key;
     MasterList masterls;
@@ -112,6 +113,8 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
 		printf ("(PRODUCER) No Shared-Memory currently available - so create!\n");
 		shmid = shmget (shmid, sizeof (MasterList), IPC_CREAT | 0660);
+		//address of the shared memory
+		//addr = shmat(shmid,NULL,0);
 		if (shmid == -1) 
 		{
 		  printf ("(PRODUCER) Cannot allocate a new memory!\n");
@@ -259,10 +262,12 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 	/* our server is done, so shut down the queue */
 
 	    msgctl (mid, IPC_RMID, (struct msqid_ds *)NULL);
-
+	/* Detach the shared memory segment.  */
+   	//shmdt(addr);
+	shmctl(shmid, IPC_RMID, NULL);
 
   // done with the message queue - so clean-up
-    msgctl (mid, IPC_RMID, NULL);
+   // msgctl (mid, IPC_RMID, NULL);
     printf ("(SERVER) Message QUEUE has been removed\n");
     fflush (stdout);
     fclose(log_stream);
