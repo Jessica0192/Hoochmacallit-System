@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
@@ -142,8 +143,8 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
     // compute size of data portion of message //IT WAS MASTERLIST
     sizeofdata = sizeof (MasterList) - sizeof (long);
-    clock_t start;
-    clock_t end;
+  clock_t start;
+  clock_t end;
     double diff_t;
     float seconds = 0;
     int done = 0;
@@ -151,6 +152,7 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
 
    // time(&start_t);
+   bool existDCOrNot = false;
    int DC_count = 0;
    int localNumDCs = 0;
    char new_dc_log[255];
@@ -164,11 +166,17 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
   time_t rawtime;
   struct tm* timeinfo;
+  //time_t start_t, end_t;
+  //double diff_t;
 
 
   //MAIN LOOP
     while (1)
         {
+	//check, compare PIDs to check if the current DC is existing one or not
+	//->to be able to calculate the time
+	//after checkin PID, update the log
+	//check the yellow thing to "shift" up if the DC 0 for example goes offline
 	   memset(strCount, 0, sizeof(strCount));
 	   memset(strProcessID,0,sizeof(strProcessID));
 
@@ -181,15 +189,22 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
            // rc = msgrcv (mid, (void *)&msg, sizeof (DCInfo), 0, 0); //DCMessage
             rc = msgrcv(mid, &incom_msg, new_size,0 ,0);
 		printf("incom_msg pid: %d\n", incom_msg.machinePID);
+
+		
+		//NEW THING - Now we need to save the current DC with all its features to 			//the master list
+		//msList->dc[localNumDCs].dcProcessID = incom_msg.machinePID;
+		//printf("\nADDED %d MACHINE TO THE MASTER LIST\n", msList->dc[localNumDCs].dcProcessID);
 		printf("incom_msg msg: %s\n", incom_msg.msg);
 		printf("rc: %d\n", rc);
 
             if (rc == -1) 
             {
                 printf("(SERVER) Error occured while trying to receive a message...");
-               // break;
+                break;
+	    }
                end = clock();
                seconds += (float)(end - start) / CLOCKS_PER_SEC;
+		printf("SECONDS %.2f", seconds);
 
                if (seconds == 35)
                {
@@ -197,6 +212,7 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
 		
 		
 		localNumDCs--;
+		
 
 			//check if there are any machines left at all
 			if (localNumDCs == 0)
@@ -211,7 +227,7 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
                 seconds = 0; //reset
 		
 		sprintf(strCount, "%d", masterls.numberOfDCs);
-		sprintf(strProcessID, "%d", masterls.dc[DC_count].dcProcessID);
+		sprintf(strProcessID, "%f", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
 
 		strcpy(rem_dc_log, "DC- ");
                 strcat(rem_dc_log, DC_count);
@@ -223,40 +239,75 @@ printf("\nIPCREAT IS %d\n", IPC_CREAT);
                 fprintf(log_stream, "%s", rem_dc_log);
                    break;
                }
-            }
+            //}
             else
             {
                 masterls.msgQueueID = mid;
-		localNumDCs++;
-		masterls.numberOfDCs = localNumDCs;
+		//COMMENTED OUT localNumDCs++;
+		//commented out masterls.numberOfDCs = localNumDCs;
 		printf("numbofdc: %d\n", masterls.numberOfDCs);
                 //pid t DCMessage.ID
-                masterls.dc[DC_count].dcProcessID = (pid_t) incom_msg.machinePID; //what to do here?
+               //COMMENTED OUT THIS JUST NOW 12 08 AM 20 MARCH masterls.dc[DC_count].dcProcessID = (pid_t) incom_msg.machinePID; //what to do here?
 
 		sprintf(strCount, "%d", masterls.numberOfDCs);
-		sprintf(strProcessID, "%d", masterls.dc[DC_count].dcProcessID);
+		//NEW COMMENTED OUT sprintf(strProcessID, "%d", masterls.dc[DC_count].dcProcessID);
+		printf("\nTHE DC COUNT IS %d and numbofdc is %d\n", DC_count, masterls.numberOfDCs);
 
-		strcpy(new_dc_log, "DC- ");
-                strcat(new_dc_log, strCount);
-                strcat(new_dc_log, " [");
-                strcat(new_dc_log, strProcessID);
-                strcat(new_dc_log, "]");
-                strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
-		printf("%s\n", new_dc_log);
-                fprintf(log_stream, "%s\n", new_dc_log);
-		fflush(log_stream);
+		//NEW THING
+		if (masterls.numberOfDCs != 0){
+			for (int i = 0; i < localNumDCs; i ++)
+			{
+				printf("\nmasterls.dc[i].dcProcessID is %d\n", masterls.dc[i].dcProcessID);
+				printf("\nincom_msg.machinePID is %d\n", incom_msg.machinePID);
+				if ((pid_t)masterls.dc[i].dcProcessID == (pid_t)incom_msg.machinePID)
+				{
+					existDCOrNot = true;
+				}
+			}
+		}
+
+		if (existDCOrNot == true){
+//existDCOrNot = false; //WAIT WHAT
+		printf("\nFOR THIS %d PROCESS ID, the exist or not is TRUE\n", masterls.dc[localNumDCs].dcProcessID);}
+		else{printf("\nFOR THIS %d PROCESS ID, the exist or not is FALSE\n", masterls.dc[localNumDCs].dcProcessID);}
+
+		//NEW THING - THERE WAS NO IF STATEMENT
+		if (existDCOrNot == false){
+			//sprintf(strProcessID, "%f", incom_msg.machinePID);//NEW - ADDED LINE HERE
+//LINE BELOW CHANGED FROM DC COUNT TO LOCALNUM
+masterls.dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;//NEW ADDED LLINE'
+//LINE BELOW CHANGED FROM DC COUNT TO LOCALNUM
+sprintf(strProcessID, "%d", masterls.dc[localNumDCs].dcProcessID);//NEW ADDED LINE
+
+			printf("\nLOCAL NUM OF DCS BEFORE INCREMENTING %d\n", localNumDCs);
+			localNumDCs++;
+			printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
+			masterls.numberOfDCs = localNumDCs;
+			strcpy(new_dc_log, "DC- ");
+		        strcat(new_dc_log, strCount); //was strCount
+		        strcat(new_dc_log, " [");
+		        strcat(new_dc_log, strProcessID); //strProcessID
+		        strcat(new_dc_log, "]");
+		        strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
+			printf("%s\n", new_dc_log);
+		        fprintf(log_stream, "%s\n", new_dc_log);
+			fflush(log_stream);
+		}
                 time(&rawtime);
 	            timeinfo = localtime(&rawtime);
                 masterls.dc[DC_count].lastTimeHeardFrom =  asctime(timeinfo);
                 printf("\nThe number of DCs is %d\n", masterls.numberOfDCs);
+		existDCOrNot = false;//NEW
             }
 
-            start = clock();
+            //start = clock();
             memset(new_dc_log,0,sizeof(new_dc_log)); 
             
             printf("%.2f\n", (double) (time(NULL) - start));
 
           sleep(LAST_SLEEP);
+
+		//existDCOrNot = false;//NEW
 	}
 
 	/* our server is done, so shut down the queue */
