@@ -19,6 +19,7 @@ int main(void)
 	int mid; // message queue ID
 	int sizeofdata;
 	int continueToRun = 1;
+	int DC_pids[10] = {0};
 	time_t rawtime;
     	struct tm* timeinfo;
 	int cur_min = 0;
@@ -264,7 +265,10 @@ int main(void)
                 howManySec = 0; //reset
 		
 		sprintf(strCount, "%d", masterls.numberOfDCs);
-		sprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
+		//I CHANGED IT RNsprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
+
+		sprintf(strProcessID, "%d",DC_pids[masterls.numberOfDCs]);
+
 
 		strcpy(rem_dc_log, "DC- ");
                 strcat(rem_dc_log, strCount);
@@ -327,12 +331,14 @@ int main(void)
 			masterls.dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;//NEW ADDED LLINE'
 			//LINE BELOW CHANGED FROM DC COUNT TO LOCALNUM
 			sprintf(strProcessID, "%d", masterls.dc[localNumDCs].dcProcessID);//NEW ADDED LINE
+			DC_pids[localNumDCs] = masterls.dc[localNumDCs].dcProcessID;
 
 			printf("\nLOCAL NUM OF DCS BEFORE INCREMENTING %d\n", localNumDCs);
 			localNumDCs++;
 			printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
 			masterls.numberOfDCs = localNumDCs;
 			strcpy(new_dc_log, "DC- ");
+			sprintf(strCount, "%d", (localNumDCs-1));
 		        strcat(new_dc_log, strCount); //was strCount
 		        strcat(new_dc_log, " [");
 		        strcat(new_dc_log, strProcessID); //strProcessID
@@ -378,6 +384,5 @@ int main(void)
 
 	return 0;
 }
-
 
 
