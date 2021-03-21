@@ -45,12 +45,21 @@ void delay(int milliseconds);
 
 typedef struct  
 {
+	int hours;
+	int minutes;
+	int seconds;
+	int should_remove;
+	
+} last_time;
+
+typedef struct  
+{
 	// the following is a requriement of UNIX/Linux
 	long type;
 
 	// now the specifics of our message
 	pid_t dcProcessID;
-	char* lastTimeHeardFrom;	//to calculate difference use "double difftime ( time_t time2, time_t time1 ); " 
+	last_time lastTimeHeardFrom;	//to calculate difference use "double difftime ( time_t time2, time_t time1 ); " 
 	
 } DCInfo;
 
@@ -66,6 +75,8 @@ typedef struct
 	DCInfo dc[MAX_DC_ROLES];
 	
 } MasterList;
+
+
 
 
 
