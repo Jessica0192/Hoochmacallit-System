@@ -49,20 +49,20 @@ int main(void)
   	//  MasterList response;
     	FILE* log_stream;
 
-    	if ((log_stream = fopen("server_log.txt", "w+")) == NULL) {
+    	if ((log_stream = fopen("dataMonitor.log", "w+")) == NULL) {
             fprintf(stderr, "%s: %s\n", "Impossible to create a file", "server_log.txt");
 	    printf("Error opening file\n");
             return -1;
         }
 
     	struct stat st; 
-    	int ret = stat("server_log.txt", &st);
+    	int ret = stat("dataMonitor.log", &st);
      	if(ret != 0) {
          return -1;
     	}   
 
  	int mode = W_OK;
-    	if(access("server_log.txt", mode) ==0) {
+    	if(access("dataMonitor.log", mode) ==0) {
 	printf("can write \n");
     	} 
     	else
@@ -204,8 +204,9 @@ int main(void)
 	   	memset(strProcessID,0,sizeof(strProcessID));
 
            	printf ("(SERVER) Waiting for a message ...\n");
+	
 
-
+	if (localNumDCs != 0){
 	while(1)
 	{
 		rc = msgrcv(mid, &incom_msg, sizeof (DCMessage) - sizeof (long),0 ,IPC_NOWAIT);
@@ -215,11 +216,19 @@ int main(void)
   
     		timeinfo = localtime(&rawtime);
 		printf("\MINUTES RN %d SECONDS RN %d\n", timeinfo->tm_min, timeinfo->tm_sec);
-
-		if (((timeinfo->tm_min * 60) + timeinfo->tm_sec) - ((masterls.dc[localNumDCs].lastTimeHeardFrom.minutes * 60) + masterls.dc[localNumDCs].lastTimeHeardFrom.seconds) >=35)
+		int index = 0;
+		
+		if (localNumDCs == 1) 
+		{
+			index = 0;
+		}else{
+			index = localNumDCs;
+		}
+		printf("\nMINUTES from DC %d SECONDS from DC %d\n", masterls.dc[index].lastTimeHeardFrom.minutes, masterls.dc[index].lastTimeHeardFrom.seconds);
+		if (((timeinfo->tm_min * 60) + timeinfo->tm_sec) - ((masterls.dc[index].lastTimeHeardFrom.minutes * 60) + masterls.dc[index].lastTimeHeardFrom.seconds) >=35)
 		{printf("\n35 SECONDS PASSED COMMON!\n"); howManySec = 35; break;}
 		
-	}
+	}}else {rc = msgrcv(mid, &incom_msg, sizeof (DCMessage) - sizeof (long),0 ,0);}
 	  
              //START TIME HERE
 
@@ -243,8 +252,11 @@ int main(void)
     	timeinfo = localtime(&rawtime);
     	asctime(timeinfo);
     	masterls.dc[localNumDCs].lastTimeHeardFrom.hours = timeinfo->tm_hour;
+	printf("\nHOURS IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.hours);
     	masterls.dc[localNumDCs].lastTimeHeardFrom.minutes = timeinfo->tm_min;
+	printf("\nMINUTES IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.minutes);
     	masterls.dc[localNumDCs].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
+	printf("\nSECONDS IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.seconds);
     	printf("\nHERE %d\n", ((timeinfo->tm_min * 60) + timeinfo->tm_sec));
    	printf("\nAND HERE %d\n", ((cur_min * 60) + cur_sec));
     	printf("\nTHE ANSWER IS %d\n", howManySec);
