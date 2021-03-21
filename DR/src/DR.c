@@ -12,7 +12,7 @@
 
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
-
+int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream);
 
 int main(void)
 {
@@ -47,29 +47,37 @@ int main(void)
     	key_t message_key;
     	MasterList masterls;
   	//  MasterList response;
-    	FILE* log_stream;
+    	int check = 0;
+	char* dirname = "tmp";
+	char* path = "tmp/dataMonitor.log";
+	FILE* log_stream;
 
-    	if ((log_stream = fopen("dataMonitor.log", "w+")) == NULL) {
-            fprintf(stderr, "%s: %s\n", "Impossible to create a file", "server_log.txt");
-	    printf("Error opening file\n");
-            return -1;
-        }
+	struct stat st = {0};
+	if (stat(dirname, &st) == -1) {
+    		check = mkdir(dirname, 0700);
+	}
+	if (check == -1){
+        	printf("Unable to create directory\n"); 
+        	exit(1); 
+	}
 
-    	struct stat st; 
-    	int ret = stat("dataMonitor.log", &st);
-     	if(ret != 0) {
-         return -1;
-    	}   
-
- 	int mode = W_OK;
-    	if(access("dataMonitor.log", mode) ==0) {
-	printf("can write \n");
-    	} 
-    	else
-    	{
-		printf("no permission\n");
-		return -1;
-    	}
+	if( access( path, F_OK ) == 0 ) {
+	    	// file exists
+		log_stream = fopen(path, "a");
+		if(log_stream == NULL)
+		{
+			printf("Error on appending log file\n");
+			return 1;
+		}
+	} else {
+	    	// file doesn't exist
+	    	log_stream = fopen(path, "a");
+		if(log_stream == NULL)
+		{
+			printf("Error on creating log file\n");
+			return 1;
+		}
+	}
 
 
 	// get the unique token for the message queue (based on some agreed 
@@ -215,7 +223,7 @@ int main(void)
 	 	time(&rawtime);
   
     		timeinfo = localtime(&rawtime);
-		printf("\MINUTES RN %d SECONDS RN %d\n", timeinfo->tm_min, timeinfo->tm_sec);
+		//printf("\nMINUTES RN %d SECONDS RN %d\n", timeinfo->tm_min, timeinfo->tm_sec);
 		
 		
 		if (localNumDCs == 1) 
@@ -224,7 +232,9 @@ int main(void)
 		}else{
 			index = masterls.numberOfDCs;
 		}
-		printf("\nMINUTES from DC %d SECONDS from DC %d\n", masterls.dc[index].lastTimeHeardFrom.minutes, masterls.dc[index].lastTimeHeardFrom.seconds);
+		//printf("\nMINUTES from DC %d SECONDS from DC %d\n", masterls.dc[index].lastTimeHeardFrom.minutes, masterls.dc[index].lastTimeHeardFrom.seconds);
+
+
 		if (((timeinfo->tm_min * 60) + timeinfo->tm_sec) - ((masterls.dc[index].lastTimeHeardFrom.minutes * 60) + masterls.dc[index].lastTimeHeardFrom.seconds) >35)
 		{printf("\n35 SECONDS PASSED COMMON!\n"); howManySec = 35; break;}
 		
@@ -297,22 +307,10 @@ int main(void)
 		//I CHANGED IT RNsprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
 
 		sprintf(strProcessID, "%d",DC_pids[masterls.numberOfDCs]);
-		time_t t = time(NULL);
-	    	struct tm tm = *localtime(&t);
-	    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-		fprintf(log_stream, "["); //NEW TIME
-		fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-		fprintf(log_stream, "] ");
-		strcpy(rem_dc_log, "DC- ");
-                strcat(rem_dc_log, strCount);
-                strcat(rem_dc_log, " [");
-                strcat(rem_dc_log, strProcessID);
-                strcat(rem_dc_log, "]");
-             //   strcat(new_dc_log, dc_pid);
-                strcat(rem_dc_log, " removed from the master list - NON-RESPONSIVE");
-                fprintf(log_stream, "%s", rem_dc_log);
-		fprintf(log_stream, "\n");
-		//check if there are any machines left at all
+
+		removeDC(strCount, strProcessID, rem_dc_log, log_stream);
+
+		
 		if (localNumDCs == 0)
 		{
 			char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
@@ -410,16 +408,9 @@ int main(void)
 			time_t t = time(NULL);
 		    	struct tm tm = *localtime(&t);
 		    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-			fprintf(log_stream, "["); //NEW TIME
-			fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-			fprintf(log_stream, "] ");
-			strcpy(upd_dc_log, "DC- ");
 			sprintf(strCount, "%d", (cur_dc_id));
-		        strcat(upd_dc_log, strCount); //was strCount
-		        strcat(upd_dc_log, " [");
-		        strcat(upd_dc_log, strProcessID); //strProcessID
-		        strcat(upd_dc_log, "]");
-		        strcat(upd_dc_log, " updated in the master list - MSG RECEIVED  - Status ");
+			strcat(upd_dc_log, strProcessID); //strProcessID
+			
 			if (strcmp(incom_msg.msg, status0msg) == 0)
 			{
 				strcpy(status, "00");
@@ -448,14 +439,38 @@ int main(void)
 			{
 				strcpy(status, "06");
 			}
-			strcat(upd_dc_log, status);
-			strcat(upd_dc_log, " ");
-			strcat(upd_dc_log, "(");
-			strcat(upd_dc_log, incom_msg.msg);
-			strcat(upd_dc_log, ")");
-			printf("%s\n", upd_dc_log);
-		        fprintf(log_stream, "%s\n", upd_dc_log);
-			fflush(log_stream);
+			
+			if (strcmp(status, "06")!=0){
+				fprintf(log_stream, "["); //NEW TIME
+				fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+				fprintf(log_stream, "] ");
+				strcpy(upd_dc_log, "DC- ");
+				sprintf(strCount, "%d", (cur_dc_id));
+				strcat(upd_dc_log, strCount); //was strCount
+				strcat(upd_dc_log, " [");
+				strcat(upd_dc_log, strProcessID); //strProcessID
+				strcat(upd_dc_log, "]");
+				strcat(upd_dc_log, " updated in the master list - MSG RECEIVED  - Status ");
+				strcat(upd_dc_log, status);
+				strcat(upd_dc_log, " ");
+				strcat(upd_dc_log, "(");
+				strcat(upd_dc_log, incom_msg.msg);
+				strcat(upd_dc_log, ")");
+				printf("%s\n", upd_dc_log);
+				fprintf(log_stream, "%s\n", upd_dc_log);
+				fflush(log_stream);
+			}else{
+				localNumDCs--;
+				removeDC(strCount, strProcessID, upd_dc_log, log_stream);
+				if (localNumDCs == 0)
+				{
+					char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
+					fprintf(log_stream, "%s", allDCOffMsg);
+					break;
+				}
+			}
+
+			
 		}
                 time(&rawtime);
 	        timeinfo = localtime(&rawtime);
@@ -495,3 +510,23 @@ int main(void)
 }
 
 
+int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream)
+{
+
+
+		time_t t = time(NULL);
+	    	struct tm tm = *localtime(&t);
+	    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		fprintf(log_stream, "["); //NEW TIME
+		fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		fprintf(log_stream, "] ");
+		strcpy(rem_dc_log, "DC- ");
+                strcat(rem_dc_log, strCount);
+                strcat(rem_dc_log, " [");
+                strcat(rem_dc_log, strProcessID);
+                strcat(rem_dc_log, "]");
+             //   strcat(new_dc_log, dc_pid);
+                strcat(rem_dc_log, " removed from the master list - NON-RESPONSIVE");
+                fprintf(log_stream, "%s", rem_dc_log);
+		fprintf(log_stream, "\n");
+}
