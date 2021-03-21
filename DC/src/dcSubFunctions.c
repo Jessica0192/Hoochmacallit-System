@@ -42,7 +42,7 @@ int send_message (int mid, pid_t pid, char* msg)
   	return 0;
 }
 
-int createLog(int status, pid_t pid, char* msg, struct tm T)
+int createLog(int status, pid_t pid, char* msg)
 {
 	int check = 0;
 	char* dirname = "tmp";
@@ -77,8 +77,11 @@ int createLog(int status, pid_t pid, char* msg, struct tm T)
 	}
 
 
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+
 
 	fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : DC [%d] - MSG SENT - Status %d (%s)\n",
-	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, pid, status, msg);
+	 tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, pid, status, msg);
 	fclose(ofp);
 }

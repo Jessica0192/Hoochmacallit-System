@@ -159,16 +159,15 @@ int main(int argc, char* argv[])
 	     {
 		return 1;
 	     }
-	     if(iStatus == 6)
-	     {
-	       counter = 0;
-	       //clean up - closing socket
-	       //close(my_server_socket);
-	       break;
-	     }
 	   }
-	   tm = *localtime(&T);
-	   createLog(iStatus, machinePID, msg, tm);
+	   createLog(iStatus, machinePID, msg);
+	   if(iStatus == 6)
+	   {
+	     counter = 0;
+	     //clean up - closing socket
+	     //close(my_server_socket);
+             break;
+           }
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
 	   sleep(randSleep);
 	 }
