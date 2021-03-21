@@ -7,7 +7,6 @@ int executeAction(int status, MasterList* masterls)
   time_t T = time(NULL);
   pid_t pid;
   int retVal=0;
-  struct tm tm;
 
   switch(status)
   {
@@ -25,8 +24,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 1, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 1, "TERMINATED");
 		break;
 	  case 2:
 	  case 5:
@@ -37,8 +35,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 3, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 3, "TERMINATED");
 		break;
 	  case 3:
 	  case 6:
@@ -49,18 +46,16 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 2, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 2, "TERMINATED");
 		break;
 	  case 10:
 	  case 17:
 		//delete message queue being used between DCs and DR
 		message_key = ftok (".", 'M');
 		msgctl (message_key, IPC_RMID, NULL);
-		struct tm tm = *localtime(&T);
   		printf ("(DX) Message QUEUE has been removed\n");
   		fflush (stdout);
-		retVal=createLogMsgWOD(tm, 0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
+		retVal=createLogMsgWOD(0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
 		break;
 	  case 7:
 	 	//kill DC-04 if exists
@@ -69,8 +64,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 4, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 4, "TERMINATED");
 		break;
 	  case 9:
 		//kill DC-05 if exists
@@ -79,8 +73,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 5, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 5, "TERMINATED");
 		break;
 	  case 12:
 		//kill DC-06 if exists
@@ -89,8 +82,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 6, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 6, "TERMINATED");
 		break;
 	  case 14:
 		//kill DC-07 if exists
@@ -99,8 +91,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 7, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 7, "TERMINATED");
 		break;
 	  case 16:
 		//kill DC-08 if exists
@@ -109,8 +100,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 8, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
 		break;
 	  case 18:
 		//kill DC-09 if exists
@@ -119,8 +109,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 9, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 9, "TERMINATED");
 		break;
 	  case 20:
 		//kill DC-10 if exists
@@ -129,8 +118,7 @@ int executeAction(int status, MasterList* masterls)
 		{
 		   kill(pid, SIGKILL);
 		}
-		tm = *localtime(&T);
-		retVal=createLogMsgWOD(tm, pid, status, 10, "TERMINATED");
+		retVal=createLogMsgWOD(pid, status, 10, "TERMINATED");
 		break;
   }
   if(retVal == 1)
@@ -140,11 +128,23 @@ int executeAction(int status, MasterList* masterls)
   return 0;
 }
 
-int createLogMsgWOD(struct tm T, pid_t pid, int actionNum, int dcNum, char* msg)
+int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
 {
+  int check = 0;
+  char* dirname = "tmp";
   char* path = "/tmp/dataCorruptor.log";
   char* fullMsg = NULL;
   FILE* ofp;
+
+  struct stat st = {0};
+  if (stat(dirname, &st) == -1) {
+     	check = mkdir(dirname, 0700);
+  }
+  if (check == -1){
+      	printf("Unable to create directory\n"); 
+        exit(1); 
+  }
+
 
   ofp = fopen(path, "a");
   if(ofp == NULL)
@@ -152,6 +152,9 @@ int createLogMsgWOD(struct tm T, pid_t pid, int actionNum, int dcNum, char* msg)
     printf("Error on creating log file\n");
     return 1;
   }
+
+  time_t t = time(NULL);
+  struct tm T = *localtime(&t);
   
   if(actionNum == 10 || actionNum == 17)
   {

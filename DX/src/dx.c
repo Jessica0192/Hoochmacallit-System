@@ -30,9 +30,6 @@ int main(int argc, char* argv[])
  int randSleep=0;
  int wodStatus=0;
  int retVal = 0;
- struct tm tm; 
-
- time_t T = time(NULL);
 
  	//get key of shared-memory ID
  	shmKey = ftok (".", 16535);
@@ -93,8 +90,7 @@ int main(int argc, char* argv[])
 	   msgmid = msgget (message_key, 0);
 	   if (msgmid == -1) 
 	   {
-		tm = *localtime(&T);
-		createLogMsgWOD(tm, 0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
+		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
 		  break;	//or return 1;
 	   }
 

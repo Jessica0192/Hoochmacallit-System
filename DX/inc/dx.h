@@ -8,6 +8,7 @@
 #include <sys/msg.h>
 #include <sys/shm.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #include <signal.h>
 
@@ -51,4 +52,4 @@ typedef struct
 } DCMessage;
 
 int executeAction(int status, MasterList* masterls);
-int createLogMsgWOD(struct tm T, pid_t pid, int actionNum, int dcNum, char* msg);
+int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg);
