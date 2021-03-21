@@ -25,6 +25,22 @@ int main(void)
 	int cur_min = 0;
     	int cur_sec = 0;
     	int howManySec = 0;
+
+	char status0msg[100] = {0};
+	strcpy(status0msg, "Everything is OKAY");
+	char status1msg[100] = {0};
+	strcpy(status1msg, "Hydraulic Pressure Failure");
+	char status2msg[100] = {0};
+	strcpy(status2msg, "Safety Button Failure");
+	char status3msg[100] = {0};
+	strcpy(status3msg, "No Raw Material in the Process");
+	char status4msg[100] = {0};
+	strcpy(status4msg, "Operating Temparature Out of Range");
+	char status5msg[100] = {0};
+	strcpy(status5msg, "Operator Error");
+	char status6msg[100] = {0};
+	strcpy(status6msg, "Machine is Off-line");
+	char status[10] = {0};
    	//where we'll put address of shared memory
    	//cpmst *addr;
 
@@ -162,6 +178,7 @@ int main(void)
    	int DC_count = 0;
    	int localNumDCs = 0;
    	char new_dc_log[255];
+	char upd_dc_log[255];
    	char rem_dc_log[255];
    	char strCount[5] = {0};		//string count of DCs when writing to file
    	char strProcessID[20] = {0};		//string processID when writing to file
@@ -346,6 +363,70 @@ int main(void)
 		        strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
 			printf("%s\n", new_dc_log);
 		        fprintf(log_stream, "%s\n", new_dc_log);
+			fflush(log_stream);
+		}
+		else //NEW ELSE
+		{
+			masterls.dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;//NEW ADDED LLINE'
+			int cur_dc_id = 0;
+			//searching for the current DC's id 
+			for (int i = 0; i < 10; i++)
+			{
+				if (DC_pids[i] == incom_msg.machinePID)
+				{
+					cur_dc_id = i;
+				}
+			}
+			//LINE BELOW CHANGED FROM DC COUNT TO LOCALNUM
+			sprintf(strProcessID, "%d", masterls.dc[localNumDCs].dcProcessID);//NEW ADDED LINE
+			//DC_pids[localNumDCs] = masterls.dc[localNumDCs].dcProcessID;
+
+			printf("\nLOCAL NUM OF DCS BEFORE INCREMENTING %d\n", localNumDCs);
+			//localNumDCs++;
+			printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
+			masterls.numberOfDCs = localNumDCs;
+			strcpy(upd_dc_log, "DC- ");
+			sprintf(strCount, "%d", (cur_dc_id));
+		        strcat(upd_dc_log, strCount); //was strCount
+		        strcat(upd_dc_log, " [");
+		        strcat(upd_dc_log, strProcessID); //strProcessID
+		        strcat(upd_dc_log, "]");
+		        strcat(upd_dc_log, " updated in the master list - MSG RECEIVED  - Status ");
+			if (strcmp(incom_msg.msg, status0msg) == 0)
+			{
+				strcpy(status, "00");
+			}
+			else if (strcmp(incom_msg.msg, status1msg) == 0)
+			{
+				strcpy(status, "01");
+			}
+			else if (strcmp(incom_msg.msg, status2msg) == 0)
+			{
+				strcpy(status, "02");
+			}
+			else if (strcmp(incom_msg.msg, status3msg) == 0)
+			{
+				strcpy(status, "03");
+			}
+			else if (strcmp(incom_msg.msg, status4msg) == 0)
+			{
+				strcpy(status, "04");
+			}
+			else if (strcmp(incom_msg.msg, status5msg) == 0)
+			{
+				strcpy(status, "05");
+			}
+			else
+			{
+				strcpy(status, "06");
+			}
+			strcat(upd_dc_log, status);
+			strcat(upd_dc_log, " ");
+			strcat(upd_dc_log, "(");
+			strcat(upd_dc_log, incom_msg.msg);
+			strcat(upd_dc_log, ")");
+			printf("%s\n", upd_dc_log);
+		        fprintf(log_stream, "%s\n", upd_dc_log);
 			fflush(log_stream);
 		}
                 time(&rawtime);
