@@ -191,7 +191,7 @@ int main(void)
   	//struct tm* timeinfo;
   	//time_t start_t, end_t;
   	//double diff_t;
-
+	int index = 0;
 
   	//MAIN LOOP
     	while (1)
@@ -216,16 +216,16 @@ int main(void)
   
     		timeinfo = localtime(&rawtime);
 		printf("\MINUTES RN %d SECONDS RN %d\n", timeinfo->tm_min, timeinfo->tm_sec);
-		int index = 0;
+		
 		
 		if (localNumDCs == 1) 
 		{
 			index = 0;
 		}else{
-			index = localNumDCs;
+			index = masterls.numberOfDCs;
 		}
 		printf("\nMINUTES from DC %d SECONDS from DC %d\n", masterls.dc[index].lastTimeHeardFrom.minutes, masterls.dc[index].lastTimeHeardFrom.seconds);
-		if (((timeinfo->tm_min * 60) + timeinfo->tm_sec) - ((masterls.dc[index].lastTimeHeardFrom.minutes * 60) + masterls.dc[index].lastTimeHeardFrom.seconds) >=35)
+		if (((timeinfo->tm_min * 60) + timeinfo->tm_sec) - ((masterls.dc[index].lastTimeHeardFrom.minutes * 60) + masterls.dc[index].lastTimeHeardFrom.seconds) >35)
 		{printf("\n35 SECONDS PASSED COMMON!\n"); howManySec = 35; break;}
 		
 	}}else {rc = msgrcv(mid, &incom_msg, sizeof (DCMessage) - sizeof (long),0 ,0);}
@@ -251,12 +251,12 @@ int main(void)
   
     	timeinfo = localtime(&rawtime);
     	asctime(timeinfo);
-    	masterls.dc[localNumDCs].lastTimeHeardFrom.hours = timeinfo->tm_hour;
-	printf("\nHOURS IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.hours);
-    	masterls.dc[localNumDCs].lastTimeHeardFrom.minutes = timeinfo->tm_min;
-	printf("\nMINUTES IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.minutes);
-    	masterls.dc[localNumDCs].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
-	printf("\nSECONDS IS %d\n", masterls.dc[localNumDCs].lastTimeHeardFrom.seconds);
+    	masterls.dc[index].lastTimeHeardFrom.hours = timeinfo->tm_hour;
+	printf("\nHOURS IS %d\n", masterls.dc[index].lastTimeHeardFrom.hours);
+    	masterls.dc[index].lastTimeHeardFrom.minutes = timeinfo->tm_min;
+	printf("\nMINUTES IS %d\n", masterls.dc[index].lastTimeHeardFrom.minutes);
+    	masterls.dc[index].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
+	printf("\nSECONDS IS %d\n", masterls.dc[index].lastTimeHeardFrom.seconds);
     	printf("\nHERE %d\n", ((timeinfo->tm_min * 60) + timeinfo->tm_sec));
    	printf("\nAND HERE %d\n", ((cur_min * 60) + cur_sec));
     	printf("\nTHE ANSWER IS %d\n", howManySec);
@@ -297,8 +297,12 @@ int main(void)
 		//I CHANGED IT RNsprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
 
 		sprintf(strProcessID, "%d",DC_pids[masterls.numberOfDCs]);
-
-
+		time_t t = time(NULL);
+	    	struct tm tm = *localtime(&t);
+	    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		fprintf(log_stream, "["); //NEW TIME
+		fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		fprintf(log_stream, "] ");
 		strcpy(rem_dc_log, "DC- ");
                 strcat(rem_dc_log, strCount);
                 strcat(rem_dc_log, " [");
@@ -366,6 +370,12 @@ int main(void)
 			localNumDCs++;
 			printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
 			masterls.numberOfDCs = localNumDCs;
+			time_t t = time(NULL);
+		    	struct tm tm = *localtime(&t);
+		    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(log_stream, "["); //NEW TIME
+			fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(log_stream, "] ");
 			strcpy(new_dc_log, "DC- ");
 			sprintf(strCount, "%d", (localNumDCs-1));
 		        strcat(new_dc_log, strCount); //was strCount
@@ -397,6 +407,12 @@ int main(void)
 			//localNumDCs++;
 			printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
 			masterls.numberOfDCs = localNumDCs;
+			time_t t = time(NULL);
+		    	struct tm tm = *localtime(&t);
+		    	printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(log_stream, "["); //NEW TIME
+			fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+			fprintf(log_stream, "] ");
 			strcpy(upd_dc_log, "DC- ");
 			sprintf(strCount, "%d", (cur_dc_id));
 		        strcat(upd_dc_log, strCount); //was strCount
