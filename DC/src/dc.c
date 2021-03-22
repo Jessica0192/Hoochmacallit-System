@@ -1,12 +1,13 @@
 /*
-* FILE: encodeInput.c
-* PROJECT: A2
+* FILE: dc.c
+* PROJECT: A3
 * PROGRAMMER: JESSICA SIM
-* FIRST VERSION: 2021-02-11
-* DESCRIPTION: This program takes several different options, input and output file name as optional.
-* Depend on the existence of option, -srec, it creates SRecord or ASM output. If user choose option '-h'
-* it will output help(usage statement) information and exit the program. If there is no input and output file name
-* provided in argument, it gets standard input and prints as standard output
+* FIRST VERSION: 2021-03-11
+* DESCRIPTION: This program creates the message key with the specific key('M') and check if the message queue is 
+* existing with the key just created. If the message queue is not existing, wait until it is created. 
+* If the message queue is existing, it goes to main loop which gets a random number of status and send
+* the corresponding message of that status to server. If the status is 6, it sends the coressponding message and 
+* terminates the current DC application
 */
 
 #include "../inc/dc.h"
@@ -39,52 +40,8 @@ int main(int argc, char* argv[])
  //socket
  //int my_server_socket;
  char* recvBuff;
- //struct sockaddr_in server_addr;
- //struct hostent* host;
 
-	//if((sockfd = socket(AF_INET, SOCK_STREAM, 0))<0)
-	//{
-	  //printf("Error: Could not create socket\n");
-	  //return 1;
-	//}
-
-	//if((host = gethostbyname("127.0.0.1")) == NULL)		//host: 127.0.0.1
-	//{
-	  //printf("[CLIENT] Host Info Search - FAILED\n");
-	//}
-
-	/*
- 	 * initialize struct to get a socket to host
-	 */
-	//memset (&server_addr, 0, sizeof (server_addr));
-	//server_addr.sin_family = AF_INET;
-	//memcpy (&server_addr.sin_addr, host->h_addr, host->h_length);
-	//server_addr.sin_port = htons (8080);
-
-	/*
-      	* get a socket for communications
-      	*/
-	//printf ("[CLIENT] : Getting STREAM Socket to talk to SERVER\n");
-	//fflush(stdout);
-        //if ((my_server_socket = socket (AF_INET, SOCK_STREAM, 0)) < 0) 
-        //{
-          //printf ("[CLIENT] : Getting Client Socket - FAILED\n");
-          //return 3;
-        //}
-
-	/*
-         * attempt a connection to server
-         */
-	//printf ("[CLIENT] : Connecting to SERVER\n");
-	//fflush(stdout);
-        //if (connect (my_server_socket, (struct sockaddr *)&server_addr,sizeof    (server_addr)) < 0) 
-     	//{
-       	  //printf ("[CLIENT] : Connect to Server - FAILED\n");
-          //close (my_server_socket);
-          //return 4;
-        //}
-
- 	//*create function get message_key "getQueueKey()"
+	//get message key
  	msgKey = ftok ("../../", 'M');
 	if (msgKey == -1) 
 	{ 
@@ -95,6 +52,7 @@ int main(int argc, char* argv[])
 	printf("msgkey: %d\n", msgKey);
 	numOfClients++;
 	printf("numOfClients: %d\n", numOfClients);
+
 	// check if the msg queue already exists
 	while(1)
 	{
@@ -107,27 +65,6 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-		  //shmKey = ftok(".", 16535);
-		//printf("shmkey: %d\n", shmKey);
-		  //if (shmKey == -1) 
-	          //{ 
-	  		//printf ("(CLIENT) Cannot allocate key\n");
-	  		//return 1;
-	          //}
-
-		  //if ((shmid = shmget (shmKey, sizeof (MasterList), 0)) == -1) 
-		  //{
-			//printf ("(CLIENT) Shared-Memory doesn't exist. run the PRODUCER!\n");
-			//return 2;
-	     	  //}
-
-		 // msList = (MasterList *)shmat (shmid, NULL, 0);
-	  	  //if (msList == NULL) 
-		  //{
-	  		//printf ("(CLIENT) Cannot attach to Shared-Memory!\n");
-	  		//return 3;
-		  //}
-
 		  //int localnumDCs = msList->numberOfDCs;
 		  if(numOfClients == 10)
 		  {
@@ -138,37 +75,50 @@ int main(int argc, char* argv[])
 		  break;
 		}
 	}
-  	//*
 
  	//main process loop
 	 while(1)
 	 {
 	   counter++;
-	   machinePID = getpid();  	//dcmsg.machinePID
+	   //get the pid of the current DC application
+	   machinePID = getpid();  				//dcmsg.machinePID
+	   //to check if the first time that current DC is connected
 	   if(counter == 1)
 	   {   
+	     //set iStatus to 0 because it is a first time connecting
 	     iStatus = 0;
-	     msg = getStatus(iStatus);	//dcmsg.msg
-	     send_message(mid, machinePID, msg);
-	   }
-	   else
-	   {
-	     iStatus = rand() % 7;
-	     msg = getStatus(iStatus);		//dcmsg.msg
+	     //get the message corresponding of the status
+	     msg = getStatus(iStatus);				//dcmsg.msg
+	     //send message
 	     if(send_message(mid, machinePID, msg) == 1)
 	     {
 		return 1;
 	     }
 	   }
+	   else
+	   {
+	     //get random number of status between 0 to 6
+	     iStatus = rand() % 7;
+	     //get the message corresponding of the status
+	     msg = getStatus(iStatus);				//dcmsg.msg
+	     //send message
+	     if(send_message(mid, machinePID, msg) == 1)
+	     {
+		return 1;
+	     }
+	   }
+	   //create log message after sending message
 	   createLog(iStatus, machinePID, msg);
+	   //if the status was 6, terminates the current application
 	   if(iStatus == 6)
 	   {
 	     counter = 0;
-	     //clean up - closing socket
-	     //close(my_server_socket);
+	     msgctl(mid, IPC_RMID, NULL);
              break;
            }
+	   //get random number from 10 to 30
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
+	   //go to sleep for amount of randSleep 
 	   sleep(randSleep);
 	 }
 

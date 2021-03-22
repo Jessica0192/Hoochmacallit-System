@@ -1,6 +1,22 @@
+/*
+* FILE: dxSubFunctions.c
+* PROJECT: A3
+* PROGRAMMER: JESSICA SIM
+* FIRST VERSION: 2021-03-11
+* DESCRIPTION: This file contains several functions that is going to be called to help Data Interrupter application
+*/
+
+
 #include "../inc/dx.h"
 
 
+/*
+* FUNCTION: executeAction
+* PURPOSE: The function takes integer value of status and pointer to MasterList struct. Depends on the status
+* I get, it does the corresponding action. For example, it kills the specific DC application or delete the message
+* queue
+* RETURNS: int - returns the status if the creating the log message succeed or not
+*/
 int executeAction(int status, MasterList* masterls)
 {
   key_t message_key = 0;
@@ -51,11 +67,14 @@ int executeAction(int status, MasterList* masterls)
 	  case 10:
 	  case 17:
 		//delete message queue being used between DCs and DR
-		message_key = ftok (".", 'M');
+		message_key = ftok ("../../", 'M');
+		if (msgKey != -1) 
+		{ 
 		msgctl (message_key, IPC_RMID, NULL);
   		printf ("(DX) Message QUEUE has been removed\n");
   		fflush (stdout);
 		retVal=createLogMsgWOD(0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
+		}
 		break;
 	  case 7:
 	 	//kill DC-04 if exists
@@ -128,6 +147,12 @@ int executeAction(int status, MasterList* masterls)
   return 0;
 }
 
+/*
+* FUNCTION: createLogMsgWOD
+* PURPOSE: The function takes pid of DC application, number of the action that has executed, number of DC application,
+* and message that is going to be written in the log file. 
+* RETURNS: int - returns if writing log message is succeed or not
+*/
 int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
 {
   int check = 0;
@@ -136,6 +161,7 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
   char* fullMsg = NULL;
   FILE* ofp;
 
+  //creates the directory "tmp" if it is not existed
   struct stat st = {0};
   if (stat(dirname, &st) == -1) {
      	check = mkdir(dirname, 0700);
@@ -145,7 +171,7 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
         exit(1); 
   }
 
-
+  //file open to write log messages to a file
   ofp = fopen(path, "a");
   if(ofp == NULL)
   {
@@ -153,9 +179,11 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
     return 1;
   }
 
+  //get the current time to write to a log file
   time_t t = time(NULL);
   struct tm T = *localtime(&t);
   
+  //depends on the actionNum value, the format of log message is different 
   if(actionNum == 10 || actionNum == 17)
   {
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : %s\n",
@@ -171,6 +199,8 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : WOD Action %02d - DC-%02d [%d] %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, actionNum, dcNum, pid, msg);
   }
+
+  fclose(ofp);
   
   return 0;
 }

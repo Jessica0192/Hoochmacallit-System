@@ -1,5 +1,20 @@
+/*
+* FILE: dcSubFunctions.c
+* PROJECT: A3
+* PROGRAMMER: JESSICA SIM
+* FIRST VERSION: 2021-03-11
+* DESCRIPTION: This file contains several functions that is going to be called to help to send message to server
+*/
+
 #include "../inc/dc.h"
 
+
+/*
+* FUNCTION: getStatus
+* PURPOSE: The function takes integer value of status and depends on the value, it returns the corresponding message
+* INPUTS: int status - integer value of status
+* RETURNS: char* - returns the corresponding message of status
+*/
 char* getStatus(int status)
 {
   switch(status)
@@ -21,6 +36,15 @@ char* getStatus(int status)
   }
 }
 
+/*
+* FUNCTION: send_message
+* PURPOSE: The function takes message id, pid, and message that will be sent to server. Using "msgsnd" function,
+* sends the message with the passed message id.
+* INPUTS: int mid - integer value of message id
+	  pid_t pid - pid of current DC application
+          char* msg - pointer to char array that contains message which will be sent to server
+* RETURNS: int - success or failed
+*/
 int send_message (int mid, pid_t pid, char* msg)
 {
 	DCMessage sendMsg;
@@ -42,6 +66,15 @@ int send_message (int mid, pid_t pid, char* msg)
   	return 0;
 }
 
+/*
+* FUNCTION: createLog
+* PURPOSE: The function takes status of the message, pid, and message that is sent to server. It stores a log message 
+* that the specific "msg" is sent to server
+* INPUTS: int status - integer value of status
+	  pid_t pid - pid of current DC application
+          char* msg - pointer to char array that contains message which will be sent to server
+* RETURNS: int - success or failed
+*/
 int createLog(int status, pid_t pid, char* msg)
 {
 	int check = 0;

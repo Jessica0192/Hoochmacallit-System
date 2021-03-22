@@ -17,7 +17,7 @@
 # =======================================================
 # FINAL BINARY Target
 ./bin/DX : ./obj/dx.o ./obj/dxSubFunctions.o 
-	cc ./obj/dx.o ./obj/dxSubFunctions.o -o ./bin/DX
+	cc ./obj/dx.o ./obj/dxSubFunctions.o -o ../DR/bin/DX
 #
 # =======================================================
 #                     Dependencies

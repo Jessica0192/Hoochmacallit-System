@@ -1,12 +1,12 @@
 /*
 * FILE: dx.c
-* PROJECT: A2
+* PROJECT: A3
 * PROGRAMMER: JESSICA SIM
-* FIRST VERSION: 2021-02-11
-* DESCRIPTION: This program takes several different options, input and output file name as optional.
-* Depend on the existence of option, -srec, it creates SRecord or ASM output. If user choose option '-h'
-* it will output help(usage statement) information and exit the program. If there is no input and output file name
-* provided in argument, it gets standard input and prints as standard output
+* FIRST VERSION: 2021-03-11
+* DESCRIPTION: This program is a corruptor application and the purpose of this application is to create the alternative
+* (or exceptions) paths through the DC and DR applications. It does two actions: killing a DC process to test DC
+* application going offline in the application suite, deleting the message queue being used between set of DC
+* applications and DR application 
 */
 
 #include "../inc/dx.h"
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	  return 0;
 	}
 
-	// check if share memory exists
+	// check if shared memory exists
 	while(1)
 	{
 		shmid = shmget(shmKey, sizeof(MasterList), 0);
@@ -62,12 +62,13 @@ int main(int argc, char* argv[])
 		  break;
 		}
 
+		//if the application waited for 10 times and the shared memory still is not existing, terminates
+		//the application
 		if(counter == 100)
 		{
 		  return 1;
 		}
 	}
-  	//*
 
 	//get message key
 	message_key = ftok (".", 'M');
