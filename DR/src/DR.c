@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <stdbool.h>
 
+#include <stddef.h>    // for NULL
+#include <error.h>
+#include <mqueue.h>
+
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
 int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream);
@@ -192,6 +196,7 @@ int main(void)
    	char strProcessID[20] = {0};		//string processID when writing to file
    	memset(new_dc_log ,0, sizeof(new_dc_log));
    	memset(rem_dc_log ,0, sizeof(rem_dc_log));
+	memset(upd_dc_log ,0, sizeof(upd_dc_log));
   	// time_t strart = time(NULL);
   	DCMessage incom_msg;
 
@@ -469,7 +474,7 @@ int main(void)
 			//printf("\nMINUTES IS %d\n", masterls.dc[index].lastTimeHeardFrom.minutes);
 		    	masterls.dc[(localNumDCs-1)].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
 		}
-		else //NEW ELSE
+		else if (rc >= 0)//NEW ELSE
 		{
 			//masterls.dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;//NEW ADDED LLINE'
 			int cur_dc_id = 0;
@@ -544,6 +549,7 @@ int main(void)
 				strcat(upd_dc_log, ")");
 				//printf("%s\n", upd_dc_log);
 				fprintf(log_stream, "%s\n", upd_dc_log);
+				strcpy(upd_dc_log,"");
 				fflush(log_stream);
 			}else{
 				localNumDCs--;
