@@ -88,6 +88,7 @@ int main(int argc, char* argv[])
 	   {   
 	     //set iStatus to 0 because it is a first time connecting
 	     iStatus = 0;
+	     printf("\n\n1 iStatus: %d", iStatus);
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
 	     //send message
@@ -100,6 +101,7 @@ int main(int argc, char* argv[])
 	   {
 	     //get random number of status between 0 to 6
 	     iStatus = rand() % 7;
+	     printf("\n\n2 iStatus: %d", iStatus);
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
 	     //send message
