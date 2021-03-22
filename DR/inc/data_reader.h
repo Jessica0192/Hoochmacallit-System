@@ -48,7 +48,7 @@ typedef struct
 	int hours;
 	int minutes;
 	int seconds;
-	int should_remove;
+	int time;
 	
 } last_time;
 
