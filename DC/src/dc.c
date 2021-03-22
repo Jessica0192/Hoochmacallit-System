@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
 	 while(1)
 	 {
 	   counter++;
+	   iStatus = 0;
 	   //get the pid of the current DC application
 	   machinePID = getpid();  				//dcmsg.machinePID
 	   //to check if the first time that current DC is connected
@@ -113,7 +114,7 @@ int main(int argc, char* argv[])
 	   if(iStatus == 6)
 	   {
 	     counter = 0;
-	     msgctl(mid, IPC_RMID, NULL);
+	     //kill(pid, SIGKILL);
              break;
            }
 	   //get random number from 10 to 30

@@ -1,0 +1,37 @@
+[2021-03-21 21:33:26] DC- 0 [16066] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:33:27] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:33:28] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-21 21:33:31] DC- 1 [16068] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-21 21:33:34] DC- 2 [16072] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:33:45] DC- 2 [16072] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-21 21:33:46] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-21 21:33:50] DC- 1 [16068] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-21 21:34:04] DC- 2 [16072] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-21 21:34:05] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-21 21:34:08] DC- 1 [16068] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-21 21:34:24] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 02 (Safety Button Failure)
+[2021-03-21 21:34:28] DC- 1 [16068] updated in the master list - MSG RECEIVED  - Status 02 (Safety Button Failure)
+[2021-03-21 21:34:49] DC- 2 [16072] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:34:50] DC- 0 [16066] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:34:53] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:34:54] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:35:01] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-21 21:35:05] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:35:06] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:35:31] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-21 21:35:35] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:35:36] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:36:01] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 00 (Everything is OKAY)
+[2021-03-21 21:36:05] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:36:06] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:36:14] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 01 (Hydraulic Pressure Failure)
+[2021-03-21 21:36:18] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:36:19] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:36:40] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 02 (Safety Button Failure)
+[2021-03-21 21:36:44] DC- 1 [16068] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-21 21:36:45] DC- 1 [16068] removed from the master list - NON-RESPONSIVE
+[2021-03-21 21:37:07] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 00 (Everything is OKAY)
+[2021-03-21 21:37:29] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 02 (Safety Button Failure)
+[2021-03-21 21:37:41] DC- 0 [16066] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-21 21:37:56] DC- 0 [16066] removed from the master list - NON-RESPONSIVE
+All DCs have gone offline or terminated – DR TERMINATING
