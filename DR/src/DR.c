@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <stdbool.h>
 
+#include <stddef.h>    // for NULL
+#include <error.h>
+#include <mqueue.h>
+
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
 int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream);
@@ -192,6 +196,7 @@ int main(void)
    	char strProcessID[20] = {0};		//string processID when writing to file
    	memset(new_dc_log ,0, sizeof(new_dc_log));
    	memset(rem_dc_log ,0, sizeof(rem_dc_log));
+	memset(upd_dc_log ,0, sizeof(upd_dc_log));
   	// time_t strart = time(NULL);
   	DCMessage incom_msg;
 
@@ -210,9 +215,6 @@ int main(void)
 	//check the yellow thing to "shift" up if the DC 0 for example goes offline
 		memset(strCount, 0, sizeof(strCount));
 	   	memset(strProcessID,0,sizeof(strProcessID));
-		memset(new_dc_log, 0, sizeof(new_dc_log));
-		memset(rem_dc_log, 0, sizeof(rem_dc_log));
-		memset(upd_dc_log, 0, sizeof(upd_dc_log));
 
            	printf ("(SERVER) Waiting for a message ...\n");
 	
@@ -220,9 +222,6 @@ int main(void)
 	if (localNumDCs != 0){
 	while(1)
 	{
-		memset(new_dc_log, 0, sizeof(new_dc_log));
-		memset(rem_dc_log, 0, sizeof(rem_dc_log));
-		memset(upd_dc_log, 0, sizeof(upd_dc_log));
 		rc = msgrcv(mid, &incom_msg, sizeof (DCMessage) - sizeof (long),0 ,IPC_NOWAIT);
 		if (rc != -1)
 		{break;}
@@ -475,7 +474,7 @@ int main(void)
 			//printf("\nMINUTES IS %d\n", masterls.dc[index].lastTimeHeardFrom.minutes);
 		    	masterls.dc[(localNumDCs-1)].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
 		}
-		else //NEW ELSE
+		else if (rc >= 0)//NEW ELSE
 		{
 			//masterls.dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;//NEW ADDED LLINE'
 			int cur_dc_id = 0;
@@ -532,7 +531,7 @@ int main(void)
 				strcpy(status, "06");
 			}
 			
-			if (strcmp(status, "06")!=0 && rc != -1){
+			if (strcmp(status, "06")!=0){
 				fprintf(log_stream, "["); //NEW TIME
 				fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 				fprintf(log_stream, "] ");
@@ -550,9 +549,8 @@ int main(void)
 				strcat(upd_dc_log, ")");
 				//printf("%s\n", upd_dc_log);
 				fprintf(log_stream, "%s\n", upd_dc_log);
-				printf("HEEEEERRRRREEEE!!!!!!!!!!!!!!!!!!!!\n");
+				strcpy(upd_dc_log,"");
 				fflush(log_stream);
-				memset(upd_dc_log, 0, sizeof(upd_dc_log));
 			}else{
 				localNumDCs--;
 				removeDC(strCount, strProcessID, upd_dc_log, log_stream);

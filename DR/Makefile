@@ -29,7 +29,7 @@
 all : ./bin/DR
 
 clean:
-	rm -f ./bin/*
+	rm -rf ./bin/*
 	rm -f ./obj/*.o
 	
 

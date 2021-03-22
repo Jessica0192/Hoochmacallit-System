@@ -35,5 +35,5 @@
 all : ./bin/DC
 
 clean:
-	rm -f ./bin/*
+	rm -rf ./bin/*
 	rm -f ./obj/*.o
