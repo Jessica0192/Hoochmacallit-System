@@ -24,6 +24,7 @@ int executeAction(int status, MasterList* masterls, int shmid)
   pid_t pid;
   int retVal=0;
   int mid;
+  int retKill = 0;
 
   switch(status)
   {
@@ -39,9 +40,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[0].dcProcessID;
 		if(masterls->numberOfDCs > 0)
 		{
-		   
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 1, "TERMINATED");
 		}
 		break;
@@ -52,8 +58,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[2].dcProcessID;
 		if(masterls->numberOfDCs > 2)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 3, "TERMINATED");
 		}
 		break;
@@ -64,8 +76,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[1].dcProcessID;
 		if(masterls->numberOfDCs > 1)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 2, "TERMINATED");
 		}
 		break;
@@ -93,8 +111,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[3].dcProcessID;
 		if(masterls->numberOfDCs > 3)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 4, "TERMINATED");
 		}
 		break;
@@ -103,8 +127,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[4].dcProcessID;
 		if(masterls->numberOfDCs > 4)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 5, "TERMINATED");
 		}
 
@@ -114,8 +144,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid =masterls->dc[5].dcProcessID;
 		if(masterls->numberOfDCs > 5)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 6, "TERMINATED");
 		}
 		break;
@@ -124,8 +160,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[6].dcProcessID;
 		if(masterls->numberOfDCs > 6)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 7, "TERMINATED");
 		}
 
@@ -135,9 +177,15 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[7].dcProcessID;
 		if(masterls->numberOfDCs > 7)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
-		  retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
+		   retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
 		}
 
 		break;
@@ -146,8 +194,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[8].dcProcessID;
 		if(masterls->numberOfDCs > 8)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 9, "TERMINATED");
 		}
 		break;
@@ -156,8 +210,14 @@ int executeAction(int status, MasterList* masterls, int shmid)
 		pid = masterls->dc[9].dcProcessID;
 		if(masterls->numberOfDCs > 9)
 		{
-		   kill(pid, SIGHUP);
-		   kill(pid, SIGKILL);
+		   if(kill(pid, SIGHUP) == -1)
+		   {
+			break;
+		   }
+		   if(kill(pid, SIGKILL)==-1)
+		   {
+			break;
+		   }
 		   retVal=createLogMsgWOD(pid, status, 10, "TERMINATED");
 		}
 		break;

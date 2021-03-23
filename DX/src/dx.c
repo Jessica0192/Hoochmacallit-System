@@ -96,6 +96,10 @@ int main(int argc, char* argv[])
 	   {
 		//printf("msgmid == -1\n");
 		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
+		if(-1 == shmdt(p))
+		{
+			return -1;
+		}
 		  break;	//or return 1;
 	   }
 
