@@ -16,9 +16,7 @@
 
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
-#include "../../Common/inc/common.h"
-
-int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream);
+int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream, int status);
 
 int main(void)
 {
@@ -96,8 +94,6 @@ int main(void)
         	return 1;
     	}
 
-printf("MasterLIst: %d\n", sizeof(MasterList));
-
 	printf("message_key:%d\n", message_key);
 
 	// create the message queue
@@ -140,6 +136,7 @@ printf("MasterLIst: %d\n", sizeof(MasterList));
 	  return 1;
 	}
 	printf("\nIPCREAT IS %d\n", IPC_CREAT);
+
 
 	int shmSize = sizeof(MasterList) - sizeof(long);
 
@@ -348,25 +345,45 @@ printf("MasterLIst: %d\n", sizeof(MasterList));
 
 			sprintf(strProcessID, "%d",DC_pids[removalID]);
 
-			removeDC(strCount, strProcessID, rem_dc_log, log_stream);
+			removeDC(strCount, strProcessID, rem_dc_log, log_stream, 0);
 			printf("\nREMOVED %s with PID %s\n", strCount, strProcessID);
 			printf("\nREMOVAL ID %d, LOCAL NUM DC %d\n", removalID, localNumDCs);
-			for(int j = removalID; j < localNumDCs; j++ )
-			{
-				DC_pids[j] = DC_pids[j + 1];
-				masterls.dc[j].dcProcessID = masterls.dc[j + 1].dcProcessID;
-				masterls.dc[j].lastTimeHeardFrom.time = masterls.dc[j + 1].lastTimeHeardFrom.time;
-				masterls.dc[j].lastTimeHeardFrom.hours = masterls.dc[j + 1].lastTimeHeardFrom.hours;
-				masterls.dc[j].lastTimeHeardFrom.minutes = masterls.dc[j + 1].lastTimeHeardFrom.minutes;
-				masterls.dc[j].lastTimeHeardFrom.seconds = masterls.dc[j + 1].lastTimeHeardFrom.seconds;
-				printf("\nNOW DC %d is %d\n", j, DC_pids[j]);
-				printf("\nAND IN THE MASTER LIST DC %d is %d\n", j , masterls.dc[j].dcProcessID);
-			}
 
-			DC_pids[localNumDCs] = 0;
+
+			if (removalID == 0)
+			{
+				for(int j = removalID; j < localNumDCs + 1; j++)
+				{
+					DC_pids[j] = DC_pids[j + 1];
+					masterls.dc[j].dcProcessID = masterls.dc[j + 1].dcProcessID;
+					masterls.dc[j].lastTimeHeardFrom.time = masterls.dc[j + 1].lastTimeHeardFrom.time;
+					masterls.dc[j].lastTimeHeardFrom.hours = masterls.dc[j + 1].lastTimeHeardFrom.hours;
+					masterls.dc[j].lastTimeHeardFrom.minutes = masterls.dc[j + 1].lastTimeHeardFrom.minutes;
+					masterls.dc[j].lastTimeHeardFrom.seconds = masterls.dc[j + 1].lastTimeHeardFrom.seconds;
+					printf("\nNOW DC %d is %d\n", j, DC_pids[j]);
+					printf("\nAND IN THE MASTER LIST DC %d is %d\n", j , masterls.dc[j].dcProcessID);
+				}
+				DC_pids[localNumDCs + 1] = 0;
+			}
+			else
+			{
+				for(int j = removalID; j < localNumDCs; j++ )
+				{
+					DC_pids[j] = DC_pids[j + 1];
+					masterls.dc[j].dcProcessID = masterls.dc[j + 1].dcProcessID;
+					masterls.dc[j].lastTimeHeardFrom.time = masterls.dc[j + 1].lastTimeHeardFrom.time;
+					masterls.dc[j].lastTimeHeardFrom.hours = masterls.dc[j + 1].lastTimeHeardFrom.hours;
+					masterls.dc[j].lastTimeHeardFrom.minutes = masterls.dc[j + 1].lastTimeHeardFrom.minutes;
+					masterls.dc[j].lastTimeHeardFrom.seconds = masterls.dc[j + 1].lastTimeHeardFrom.seconds;
+					printf("\nNOW DC %d is %d\n", j, DC_pids[j]);
+					printf("\nAND IN THE MASTER LIST DC %d is %d\n", j , masterls.dc[j].dcProcessID);
+				}
+				DC_pids[localNumDCs] = 0;
+			}
+			
 			if (localNumDCs == 0)
 			{
-				char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING\n";
+				char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
 				fprintf(log_stream, "%s", allDCOffMsg);
 				break;
 			}
@@ -412,13 +429,28 @@ printf("MasterLIst: %d\n", sizeof(MasterList));
 
 		//NEW THING
 		if (localNumDCs != 0){
-			for (int i = 0; i < localNumDCs; i ++)
+			if (localNumDCs == 1)
 			{
-				printf("\nmasterls.dc[i].dcProcessID is %d\n", masterls.dc[i].dcProcessID);
-				printf("\nincom_msg.machinePID is %d\n", incom_msg.machinePID);
-				if ((pid_t)masterls.dc[i].dcProcessID == (pid_t)incom_msg.machinePID)
+				for (int i = 0; i < localNumDCs + 1; i ++)
 				{
-					existDCOrNot = true;
+					printf("\nmasterls.dc[i].dcProcessID is %d\n", masterls.dc[i].dcProcessID);
+					printf("\nincom_msg.machinePID is %d\n", incom_msg.machinePID);
+					if ((pid_t)masterls.dc[i].dcProcessID == (pid_t)incom_msg.machinePID)
+					{
+						existDCOrNot = true;
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < localNumDCs; i ++)
+				{
+					printf("\nmasterls.dc[i].dcProcessID is %d\n", masterls.dc[i].dcProcessID);
+					printf("\nincom_msg.machinePID is %d\n", incom_msg.machinePID);
+					if ((pid_t)masterls.dc[i].dcProcessID == (pid_t)incom_msg.machinePID)
+					{
+						existDCOrNot = true;
+					}
 				}
 			}
 		}
@@ -557,7 +589,7 @@ printf("MasterLIst: %d\n", sizeof(MasterList));
 				fflush(log_stream);
 			}else{
 				localNumDCs--;
-				removeDC(strCount, strProcessID, upd_dc_log, log_stream);
+				removeDC(strCount, strProcessID, upd_dc_log, log_stream, 6);
 				if (localNumDCs == 0)
 				{
 					char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
@@ -622,7 +654,7 @@ printf("MasterLIst: %d\n", sizeof(MasterList));
 }
 
 
-int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream)
+int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream, int status)
 {
 
 
@@ -638,7 +670,15 @@ int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stre
                 strcat(rem_dc_log, strProcessID);
                 strcat(rem_dc_log, "]");
              //   strcat(new_dc_log, dc_pid);
-                strcat(rem_dc_log, " removed from the master list - NON-RESPONSIVE");
+
+		if (status == 6)
+		{
+			strcat(rem_dc_log, " has gone OFFLINE - removing from the master list");
+		}
+		else
+		{
+                	strcat(rem_dc_log, " removed from the master list - NON-RESPONSIVE");
+		}
                 fprintf(log_stream, "%s", rem_dc_log);
 		fprintf(log_stream, "\n");
 }

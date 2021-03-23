@@ -1,0 +1,19 @@
+int shmSize = sizeof(MasterList) - sizeof(long);
+
+	if ((shmid = shmget (shmkey, shmSize, 0)) == -1) 
+	{
+
+		/*
+		 * nope, let's create one (user/group read/write perms)
+		 */
+
+		printf ("(PRODUCER) No Shared-Memory currently available - so create!\n");
+		shmid = shmget (shmkey, shmSize, IPC_CREAT | 0660);
+		//address of the shared memory
+		//addr = shmat(shmid,NULL,0);
+		if (shmid == -1) 
+		{
+		  printf ("(PRODUCER) Cannot allocate a new memory!\n");
+		  return 2;
+		}
+	}
