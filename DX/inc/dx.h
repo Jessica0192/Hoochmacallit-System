@@ -16,5 +16,5 @@
 #define TYPE_SERVERMESSAGE 1
 
 
-int executeAction(int status, MasterList* masterls, int shmid);
+int executeAction(int status, MasterList* masterls);
 int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg);

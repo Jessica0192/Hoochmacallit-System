@@ -314,7 +314,7 @@ int main(void)
 			
 			if (localNumDCs == 0)
 			{
-				char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
+				char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING\n";
 				fprintf(log_stream, "%s", allDCOffMsg);
 				break;
 			}

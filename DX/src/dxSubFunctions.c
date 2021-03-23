@@ -17,7 +17,7 @@
 * queue
 * RETURNS: int - returns the status if the creating the log message succeed or not
 */
-int executeAction(int status, MasterList* masterls, int shmid)
+int executeAction(int status, MasterList* masterls)
 {
   key_t message_key = 0;
   time_t T = time(NULL);
@@ -98,12 +98,17 @@ int executeAction(int status, MasterList* masterls, int shmid)
     		{
         		//printf ("(SERVER) ERROR: MEssage queue doesn't exist\n");
         		//fflush (stdout);
-        		return 2;
+        		break;
     		}
 		int val = msgctl (mid, IPC_RMID, NULL);
   		//printf ("(DX) Message QUEUE has been removed\n");
   		//fflush (stdout);
 		retVal=createLogMsgWOD(0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
+		if(-1 == shmdt(masterls))
+		{
+			retVal=2;
+		}
+		exit(0);
 		}
 		break;
 	  case 7:
@@ -225,6 +230,10 @@ int executeAction(int status, MasterList* masterls, int shmid)
   if(retVal == 1)
   {
     return 1;
+  }
+  if(retVal == 2)
+  {
+    return 2;
   }
   return 0;
 }

@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
  	//main process loop
 	 while(1)
 	 {
+	   counter++;
 	   iStatus = 0;
  	   srand ( time(NULL) );
 	   //get the pid of the current DC application
@@ -78,6 +79,7 @@ int main(int argc, char* argv[])
 	     //send message
 	     if(send_message(mid, machinePID, msg) == 1)
 	     {
+		printf("here\n");
 		return 1;
 	     }
 	   }

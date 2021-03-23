@@ -106,8 +106,8 @@ int main(int argc, char* argv[])
 	   //get random number of action(Wheel of Destruction)
            srand ( time(NULL) );
 	   iStatus = rand() % 21;
-	   retVal = executeAction(iStatus, p, shmid);
-	   if(retVal == 1)
+	   retVal = executeAction(iStatus, p);
+	   if(retVal == 1 || retVal == 2)
 	   {
 		return 1;
 	   }

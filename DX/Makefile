@@ -35,5 +35,5 @@
 all : ./bin/DX
 
 clean:
-	rm -rf ./bin/*
+	rm -rf ../bin/*
 	rm -f ./obj/*.o
