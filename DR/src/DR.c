@@ -16,6 +16,8 @@
 
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
+#include "../../Common/inc/common.h"
+
 int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream, int status);
 
 int main(void)
