@@ -532,6 +532,7 @@ int main(void)
 		//NEW THING - THERE WAS NO IF STATEMENT
 		if (existDCOrNot == false)
 		{
+			
 			//NEW FOR MACHINE
 		msList->dc[localNumDCs].lastTimeHeardFrom.time = 0;
 			msList->dc[localNumDCs].dcProcessID = (pid_t) incom_msg.machinePID;
@@ -541,35 +542,42 @@ int main(void)
 
 			//printf("\nLOCAL NUM OF DCS BEFORE INCREMENTING %d\n", localNumDCs);
 			localNumDCs++;
-			//printf("\nLOCAL NUM OF DCS AFTER INCREMENTING %d\n", localNumDCs);
-			msList->numberOfDCs = localNumDCs;
-			time_t t = time(NULL);
-		    	struct tm tm = *localtime(&t);
-		    	//printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-			fprintf(log_stream, "["); //NEW TIME
-			fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-			fprintf(log_stream, "] ");
-			strcpy(new_dc_log, "DC- ");
-			sprintf(strCount, "%d", (localNumDCs-1));
-		        strcat(new_dc_log, strCount); //was strCount
-		        strcat(new_dc_log, " [");
-		        strcat(new_dc_log, strProcessID); //strProcessID
-		        strcat(new_dc_log, "]");
-		        strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
-			//printf("%s\n", new_dc_log);
-		        fprintf(log_stream, "%s\n", new_dc_log);
-			fflush(log_stream);
+
+			if (localNumDCs <= 10)
+			{
+				msList->numberOfDCs = localNumDCs;
+				time_t t = time(NULL);
+			    	struct tm tm = *localtime(&t);
+			    	//printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+				fprintf(log_stream, "["); //NEW TIME
+				fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+				fprintf(log_stream, "] ");
+				strcpy(new_dc_log, "DC- ");
+				sprintf(strCount, "%d", (localNumDCs-1));
+				strcat(new_dc_log, strCount); //was strCount
+				strcat(new_dc_log, " [");
+				strcat(new_dc_log, strProcessID); //strProcessID
+				strcat(new_dc_log, "]");
+				strcat(new_dc_log, " added to the master list - NEW DC  - Status 0 (Everything is OKAY)");
+				//printf("%s\n", new_dc_log);
+				fprintf(log_stream, "%s\n", new_dc_log);
+				fflush(log_stream);
 			
 
-			time(&rawtime);
-  
-		    	timeinfo = localtime(&rawtime);
-		    	asctime(timeinfo);
+				time(&rawtime);
+	  
+			    	timeinfo = localtime(&rawtime);
+			    	asctime(timeinfo);
 
 			
-		    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.hours = timeinfo->tm_hour;
-		    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.minutes = timeinfo->tm_min;
-		    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
+			    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.hours = timeinfo->tm_hour;
+			    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.minutes = timeinfo->tm_min;
+			    	msList->dc[(localNumDCs-1)].lastTimeHeardFrom.seconds = timeinfo->tm_sec;
+			}
+			else
+			{
+				localNumDCs = 10;
+			}
 		}
 		else if (rc >= 0)//NEW ELSE
 		{
