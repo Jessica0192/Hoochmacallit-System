@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
 	   //get random number of action(Wheel of Destruction)
 	   iStatus = rand() % 21;
-	   retVal = executeAction(iStatus, p);
+	   retVal = executeAction(iStatus, p, shmid);
 	   if(retVal == 1)
 	   {
 		return 1;

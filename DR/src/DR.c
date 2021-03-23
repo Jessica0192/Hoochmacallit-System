@@ -435,7 +435,7 @@ int main(void)
 			{
 				for (int i = 0; i < localNumDCs + 1; i ++)
 				{
-					printf("\nmasterls.dc[i].dcProcessID is %d\n", masterls.dc[i].dcProcessID);
+					printf("\nmasterls.dc[%d].dcProcessID is %d\n", i, masterls.dc[i].dcProcessID);
 					printf("\nincom_msg.machinePID is %d\n", incom_msg.machinePID);
 					if ((pid_t)masterls.dc[i].dcProcessID == (pid_t)incom_msg.machinePID)
 					{
