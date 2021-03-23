@@ -54,13 +54,10 @@ int send_message (int mid, pid_t pid, char* msg)
 	sendMsg.machinePID = pid;
 	strcat(sendMsg.msg, msg);
 
-	printf("machinPID: %d\n", sendMsg.machinePID);
-	printf("msg: %s\n", sendMsg.msg);
-
 	// send the message to server
 	if(msgsnd (mid, (void *)&sendMsg, sizeofdata, 0) == -1)
 	{
-	   printf("Error in msgsnd\n");
+	   //printf("Error in msgsnd\n");
 	   return 1;
 	}
   	return 0;
@@ -79,7 +76,7 @@ int createLog(int status, pid_t pid, char* msg)
 {
 	int check = 0;
 	char* dirname = "tmp";
-	char* path = "tmp/dataCreator.log";
+	char* path = "./tmp/dataCreator.log";
 	FILE* ofp;
 
 	struct stat st = {0};
@@ -87,7 +84,7 @@ int createLog(int status, pid_t pid, char* msg)
     		check = mkdir(dirname, 0700);
 	}
 	if (check == -1){
-        	printf("Unable to create directory\n"); 
+        	//printf("Unable to create directory\n"); 
         	exit(1); 
 	}
 
@@ -96,7 +93,7 @@ int createLog(int status, pid_t pid, char* msg)
 		ofp = fopen(path, "a");
 		if(ofp == NULL)
 		{
-			printf("Error on appending log file\n");
+			//printf("Error on appending log file\n");
 			return 1;
 		}
 	} else {

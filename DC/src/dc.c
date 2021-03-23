@@ -32,26 +32,17 @@ int main(int argc, char* argv[])
  int numOfClients = 0;
 
  struct tm tm; 
-
  time_t T = time(NULL);
-
  pid_t pid;
 
- //socket
- //int my_server_socket;
  char* recvBuff;
 
 	//get message key
  	msgKey = ftok ("../../", 'M');
 	if (msgKey == -1) 
 	{ 
-	  printf ("[CLIENT] Cannot create key!\n");
-	  fflush (stdout);
 	  return 0;
 	}
-	printf("msgkey: %d\n", msgKey);
-	numOfClients++;
-	printf("numOfClients: %d\n", numOfClients);
 
 	// check if the msg queue already exists
 	while(1)
@@ -60,18 +51,12 @@ int main(int argc, char* argv[])
 
 		if (mid == -1) 
 		{
-		  printf("(DC)Waiting\n");
+		  //printf("(DC)Waiting\n");
 		  sleep(10);
 		}
 		else
 		{
-		  //int localnumDCs = msList->numberOfDCs;
-		  if(numOfClients == 10)
-		  {
-		    printf("There are already maximum DCs present(max 10)\n");
-		    return 1;
-		  }
-		printf ("(CLIENT) Message queue ID: %d\n\n\n", mid);
+		  //printf ("(CLIENT) Message queue ID: %d\n\n\n", mid);
 		  break;
 		}
 	}
@@ -79,8 +64,8 @@ int main(int argc, char* argv[])
  	//main process loop
 	 while(1)
 	 {
-	   counter++;
 	   iStatus = 0;
+ 	   srand ( time(NULL) );
 	   //get the pid of the current DC application
 	   machinePID = getpid();  				//dcmsg.machinePID
 	   //to check if the first time that current DC is connected
@@ -88,7 +73,6 @@ int main(int argc, char* argv[])
 	   {   
 	     //set iStatus to 0 because it is a first time connecting
 	     iStatus = 0;
-	     printf("\n\n1 iStatus: %d", iStatus);
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
 	     //send message
@@ -101,7 +85,6 @@ int main(int argc, char* argv[])
 	   {
 	     //get random number of status between 0 to 6
 	     iStatus = rand() % 7;
-	     printf("\n\n2 iStatus: %d", iStatus);
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
 	     //send message
@@ -115,7 +98,6 @@ int main(int argc, char* argv[])
 	   //if the status was 6, terminates the current application
 	   if(iStatus == 6)
 	   {
-	     counter = 0;
 	     //kill(pid, SIGKILL);
              break;
            }

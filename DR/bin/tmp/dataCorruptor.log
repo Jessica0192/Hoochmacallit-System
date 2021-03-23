@@ -1,0 +1,4 @@
+[2021-03-22 20:43:48] : WOD Action 05 - DC-03 [0] TERMINATED
+[2021-03-22 20:44:03] : WOD Action 05 - DC-03 [0] TERMINATED
+[2021-03-22 20:44:18] : DX deleted the msgQ - the DR/DCs can't talk anymore - exiting
+[2021-03-22 20:44:38] : DX detected that msgQ is gone - assuming DR/DCs done

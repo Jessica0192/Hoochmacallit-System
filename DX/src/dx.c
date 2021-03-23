@@ -35,11 +35,10 @@ int main(int argc, char* argv[])
 
  	//get key of shared-memory ID
  	shmKey = ftok (".", 16535);
-	printf("shmkey: %d\n", shmKey);
 	if (shmKey == -1) 
 	{ 
-	  printf ("(CLIENT) Cannot create key!\n");
-	  fflush (stdout);
+	  //printf ("(CLIENT) Cannot create key!\n");
+	  //fflush (stdout);
 	  return 0;
 	}
 	shmSize = sizeof(MasterList) - sizeof(long);
@@ -47,11 +46,11 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		shmid = shmget(shmKey, shmSize, 0);
-		printf("shmid: %d\n", shmid);
+		//printf("shmid: %d\n", shmid);
 		if (shmid == -1) 
 		{
 		  counter++;
-		  printf("(DX)Waiting\n");
+		  //printf("(DX)Waiting\n");
 		  sleep(10);
 		}
 		else
@@ -59,7 +58,7 @@ int main(int argc, char* argv[])
 		  p = (MasterList *)shmat (shmid, NULL, 0);
 		  if (p == NULL) 
 		  {
-		    printf ("(DX) Cannot attach to shared memory!\n");
+		    //printf ("(DX) Cannot attach to shared memory!\n");
 		    return 3;
 		  }
 		  break;
@@ -77,14 +76,15 @@ int main(int argc, char* argv[])
 	message_key = ftok ("../../", 'M');
 	if (message_key == -1) 
 	{ 
-          printf ("(CLIENT) Cannot create key!\n");
-	  fflush (stdout);
+          //printf ("(CLIENT) Cannot create key!\n");
+	  //fflush (stdout);
 	  return 0;
 	}
 
  	//main process loop
 	 while(1)
 	 {
+           srand ( time(NULL) );
 	   //get random amount of time
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
 	   //go to sleep for random amount of time(between 10 and 30 secs)
@@ -94,12 +94,13 @@ int main(int argc, char* argv[])
 	   msgmid = msgget (message_key, 0);
 	   if (msgmid == -1) 
 	   {
-		printf("msgmid == -1\n");
+		//printf("msgmid == -1\n");
 		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
 		  break;	//or return 1;
 	   }
 
 	   //get random number of action(Wheel of Destruction)
+           srand ( time(NULL) );
 	   iStatus = rand() % 21;
 	   retVal = executeAction(iStatus, p, shmid);
 	   if(retVal == 1)

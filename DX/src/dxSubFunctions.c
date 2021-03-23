@@ -23,9 +23,6 @@ int executeAction(int status, MasterList* masterls, int shmid)
   time_t T = time(NULL);
   pid_t pid;
   int retVal=0;
-  MasterList* p;
-  p = (MasterList *)shmat (shmid, NULL, 0);
-	printf("p: %s\n", p);
   int mid;
 
   switch(status)
@@ -33,157 +30,136 @@ int executeAction(int status, MasterList* masterls, int shmid)
 	  case 0:
 	  case 8:
 	  case 19:
-		printf("1\n");
 		//do nothing
 		break;
 	  case 1:
 	  case 4:
 	  case 11:
 		//kill DC-01 if exists
-		printf("2\n");
 		pid = masterls->dc[0].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 0)
 		{
 		   
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 1, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 1, "TERMINATED");
 		break;
 	  case 2:
 	  case 5:
 	  case 15:
-		printf("3\n");
 		//kill DC-03 if exists
 		pid = masterls->dc[2].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 2)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 3, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 3, "TERMINATED");
 		break;
 	  case 3:
 	  case 6:
 	  case 13:
-		printf("4\n");
 		//kill DC-02 if exists
 		pid = masterls->dc[1].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 1)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 2, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 2, "TERMINATED");
 		break;
 	  case 10:
 	  case 17:
-		printf("5\n");
 		//delete message queue being used between DCs and DR
 		message_key = ftok ("../../", 'M');
-		printf("messagekey: %d\n",message_key);
 		if (message_key != -1) 
 		{ 
 		mid = msgget (message_key, 0);
     		if (mid == -1) 
     		{
-        		printf ("(SERVER) ERROR: MEssage queue doesn't exist\n");
-        		fflush (stdout);
+        		//printf ("(SERVER) ERROR: MEssage queue doesn't exist\n");
+        		//fflush (stdout);
         		return 2;
     		}
 		int val = msgctl (mid, IPC_RMID, NULL);
-		printf("val: %d\n",val);
-  		printf ("(DX) Message QUEUE has been removed\n");
-  		fflush (stdout);
+  		//printf ("(DX) Message QUEUE has been removed\n");
+  		//fflush (stdout);
 		retVal=createLogMsgWOD(0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
 		}
 		break;
 	  case 7:
-		printf("6\n");
 	 	//kill DC-04 if exists
 		pid = masterls->dc[3].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 3)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 4, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 4, "TERMINATED");
 		break;
 	  case 9:
-		printf("7\n");
 		//kill DC-05 if exists
 		pid = masterls->dc[4].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 4)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 5, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 5, "TERMINATED");
+
 		break;
 	  case 12:
-		printf("8\n");
 		//kill DC-06 if exists
 		pid =masterls->dc[5].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 5)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 6, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 6, "TERMINATED");
 		break;
 	  case 14:
-		printf("9\n");
 		//kill DC-07 if exists
 		pid = masterls->dc[6].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 6)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 7, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 7, "TERMINATED");
+
 		break;
 	  case 16:
-		printf("10\n");
 		//kill DC-08 if exists
 		pid = masterls->dc[7].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 7)
 		{
-		   		   kill(pid, SIGHUP);
+		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		  retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
+
 		break;
 	  case 18:
-		printf("11\n");
 		//kill DC-09 if exists
 		pid = masterls->dc[8].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 8)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 9, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 9, "TERMINATED");
 		break;
 	  case 20:
-		printf("12\n");
 		//kill DC-10 if exists
 		pid = masterls->dc[9].dcProcessID;
-		printf("pid: %d\n",pid);
 		if(masterls->numberOfDCs > 9)
 		{
 		   kill(pid, SIGHUP);
 		   kill(pid, SIGKILL);
+		   retVal=createLogMsgWOD(pid, status, 10, "TERMINATED");
 		}
-		retVal=createLogMsgWOD(pid, status, 10, "TERMINATED");
 		break;
   }
   if(retVal == 1)
@@ -210,30 +186,27 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
   //creates the directory "tmp" if it is not existed
   struct stat st = {0};
   if (stat(dirname, &st) == -1) {
-	printf("1!!\n");
      	check = mkdir(dirname, 0700);
   }
   if (check == -1){
-      	printf("Unable to create directory\n"); 
+      	//printf("Unable to create directory\n"); 
         exit(1); 
   }
 
 if( access( path, F_OK ) == 0 ) {
     	// file exists
 	ofp = fopen(path, "a");
-	printf("2!!\n");
 	if(ofp == NULL)
 	{
-		printf("Error on appending log file\n");
+		//printf("Error on appending log file\n");
 		return 1;
 	}
 } else {
     	// file doesn't exist
     	ofp = fopen(path, "a");
-	printf("3!!\n");
 	if(ofp == NULL)
 	{
-		printf("Error on creating log file\n");
+		//printf("Error on creating log file\n");
 		return 1;
 	}
 }
@@ -245,19 +218,16 @@ if( access( path, F_OK ) == 0 ) {
   //depends on the actionNum value, the format of log message is different 
   if(actionNum == 10 || actionNum == 17)
   {
-	printf("here!\n");
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, msg);
   }
   else if(pid == 0 && actionNum == 0 && dcNum == 0)
   {
-	printf("here!!\n");
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, msg);
   }
   else
   {
-	printf("here!!!\n");
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : WOD Action %02d - DC-%02d [%d] %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, actionNum, dcNum, pid, msg);
   }
