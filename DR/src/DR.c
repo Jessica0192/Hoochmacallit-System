@@ -16,8 +16,6 @@
 
 #pragma warning (disable: 4996)
 #include "../inc/data_reader.h"
-#include "../../Common/inc/common.h"
-
 int removeDC(char* strCount, char*strProcessID, char* rem_dc_log, FILE* log_stream, int status);
 
 int main(void)
@@ -140,9 +138,8 @@ int main(void)
 	printf("\nIPCREAT IS %d\n", IPC_CREAT);
 
 
-	int shmSize = sizeof(MasterList) - sizeof(long);
-
-	if ((shmid = shmget (shmkey, shmSize, 0)) == -1) 
+	printf("shmkey: %d\n", shmkey);
+	if ((shmid = shmget (shmkey, sizeof (MasterList), 0)) == -1) 
 	{
 
 		/*
@@ -150,7 +147,7 @@ int main(void)
 		 */
 
 		printf ("(PRODUCER) No Shared-Memory currently available - so create!\n");
-		shmid = shmget (shmkey, shmSize, IPC_CREAT | 0660);
+		shmid = shmget (shmid, sizeof (MasterList), IPC_CREAT | 0660);
 		//address of the shared memory
 		//addr = shmat(shmid,NULL,0);
 		if (shmid == -1) 
@@ -220,6 +217,7 @@ int main(void)
 	   	memset(strProcessID,0,sizeof(strProcessID));
 
            	printf ("(SERVER) Waiting for a message ...\n");
+
 	
 
 	if (localNumDCs != 0){
@@ -233,7 +231,105 @@ int main(void)
     		timeinfo = localtime(&rawtime);
 		//printf("\nMINUTES RN %d SECONDS RN %d\n", timeinfo->tm_min, timeinfo->tm_sec);
 		
+		int removalID = 0;
+	bool shouldRemove = false;
+
+	for (int i = 0; i < localNumDCs; i++)
+	{
+		if (masterls.dc[i].lastTimeHeardFrom.time >35){ 
+			printf("\nMACHINE %d NON-RESPONSIVE\n", i);
+			removalID = i;
+			printf("\nREMOVAL ID IS %d WITH PID %d\n", removalID, DC_pids[removalID]);
+			shouldRemove = true;
+			
 		
+
+		}
+	}
+        if (shouldRemove == true)
+        {
+		printf("\nWENT TO REMOVAL\n");
+		
+		localNumDCs--;
+		
+		
+		        masterls.numberOfDCs = localNumDCs;
+		        howManySec = 0; //reset
+		
+			sprintf(strCount, "%d", removalID);
+			
+
+			//I CHANGED IT RNsprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
+
+			sprintf(strProcessID, "%d",DC_pids[removalID]);
+
+			removeDC(strCount, strProcessID, rem_dc_log, log_stream, 0);
+			printf("\nREMOVED %s with PID %s\n", strCount, strProcessID);
+			printf("\nREMOVAL ID %d, LOCAL NUM DC %d\n", removalID, localNumDCs);
+
+
+			if (removalID == 0)
+			{
+				for(int j = removalID; j < localNumDCs + 1; j++)
+				{
+					DC_pids[j] = DC_pids[j + 1];
+					masterls.dc[j].dcProcessID = masterls.dc[j + 1].dcProcessID;
+					masterls.dc[j].lastTimeHeardFrom.time = masterls.dc[j + 1].lastTimeHeardFrom.time;
+					masterls.dc[j].lastTimeHeardFrom.hours = masterls.dc[j + 1].lastTimeHeardFrom.hours;
+					masterls.dc[j].lastTimeHeardFrom.minutes = masterls.dc[j + 1].lastTimeHeardFrom.minutes;
+					masterls.dc[j].lastTimeHeardFrom.seconds = masterls.dc[j + 1].lastTimeHeardFrom.seconds;
+					printf("\nNOW DC %d is %d\n", j, DC_pids[j]);
+					printf("\nAND IN THE MASTER LIST DC %d is %d\n", j , masterls.dc[j].dcProcessID);
+				}
+				DC_pids[localNumDCs + 1] = 0;
+			}
+			else
+			{
+				for(int j = removalID; j < localNumDCs; j++ )
+				{
+					DC_pids[j] = DC_pids[j + 1];
+					masterls.dc[j].dcProcessID = masterls.dc[j + 1].dcProcessID;
+					masterls.dc[j].lastTimeHeardFrom.time = masterls.dc[j + 1].lastTimeHeardFrom.time;
+					masterls.dc[j].lastTimeHeardFrom.hours = masterls.dc[j + 1].lastTimeHeardFrom.hours;
+					masterls.dc[j].lastTimeHeardFrom.minutes = masterls.dc[j + 1].lastTimeHeardFrom.minutes;
+					masterls.dc[j].lastTimeHeardFrom.seconds = masterls.dc[j + 1].lastTimeHeardFrom.seconds;
+					printf("\nNOW DC %d is %d\n", j, DC_pids[j]);
+					printf("\nAND IN THE MASTER LIST DC %d is %d\n", j , masterls.dc[j].dcProcessID);
+				}
+				DC_pids[localNumDCs] = 0;
+			}
+			
+			if (localNumDCs == 0)
+			{
+				char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
+				fprintf(log_stream, "%s", allDCOffMsg);
+				break;
+			}
+		
+	//	localNumDCs--;
+		
+			
+
+		
+          //      masterls.numberOfDCs = localNumDCs;
+            //    howManySec = 0; //reset
+		
+//		sprintf(strCount, "%d", masterls.numberOfDCs);
+//		//I CHANGED IT RNsprintf(strProcessID, "%d", incom_msg.machinePID);// masterls.dc[DC_count].dcProcessID);
+//
+//		sprintf(strProcessID, "%d",DC_pids[masterls.numberOfDCs]);
+//
+//		removeDC(strCount, strProcessID, rem_dc_log, log_stream);
+
+		
+//		if (localNumDCs == 0)
+//		{
+//			char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
+//			fprintf(log_stream, "%s", allDCOffMsg);
+//			break;
+//		}
+			
+               }
 		if (localNumDCs == 1) 
 		{
 			index = 0;
@@ -594,8 +690,9 @@ int main(void)
 				removeDC(strCount, strProcessID, upd_dc_log, log_stream, 6);
 				if (localNumDCs == 0)
 				{
-					char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING";
+					char* allDCOffMsg = "All DCs have gone offline or terminated – DR TERMINATING\n";
 					fprintf(log_stream, "%s", allDCOffMsg);
+					//fprintf(log_stream, "\n");
 					break;
 				}
 			}
