@@ -19,41 +19,8 @@
 #define OPERATOR_ERR 5
 #define MACHINE_OFF_LINE 6
 
+#include "../../Common/inc/common.h"
 
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	pid_t dcProcessID;
-	time_t lastTimeHeardFrom;	//to calculate difference use "double difftime ( time_t time2, time_t time1 ); " 
-	
-} DCInfo;
-
-
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	int msgQueueID;
-	int numberOfDCs;
-	DCInfo dc[MAX_DC_ROLES];
-	
-} MasterList;
-
-typedef struct  
-{
-	// the following is a requriement of UNIX/Linux
-	long type;
-
-	// now the specifics of our message
-	pid_t machinePID;
-	char msg[100];
-	
-} DCMessage;
 
 char* getStatus(int status);
 int send_message (int mid, pid_t pid, char* msg);

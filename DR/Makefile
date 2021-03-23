@@ -19,7 +19,7 @@
 #                     Dependencies
 # =======================================================          
 
-./obj/DR.o : ./src/DR.c ./inc/data_reader.h
+./obj/DR.o : ./src/DR.c ./inc/data_reader.h ../Common/inc/common.h
 	cc -c ./src/DR.c -o ./obj/DR.o
 
 #

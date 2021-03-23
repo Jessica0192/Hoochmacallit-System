@@ -11,12 +11,11 @@
 
 #include "../inc/dx.h"
 
-
 int main(int argc, char* argv[])
 {
- DCInfo dcinfo;
- DCMessage dcmsg;
- MasterList *p;
+ //DCInfo dcinfo;
+ //DCMessage dcmsg;
+ MasterList* p;
 
  key_t shmKey;
  key_t message_key;
@@ -30,6 +29,9 @@ int main(int argc, char* argv[])
  int randSleep=0;
  int wodStatus=0;
  int retVal = 0;
+ int shmSize = 0;
+
+	//p = malloc(10 * sizeof(MasterList));
 
  	//get key of shared-memory ID
  	shmKey = ftok (".", 16535);
@@ -40,11 +42,12 @@ int main(int argc, char* argv[])
 	  fflush (stdout);
 	  return 0;
 	}
-
+	shmSize = sizeof(MasterList) - sizeof(long);
 	// check if shared memory exists
 	while(1)
 	{
-		shmid = shmget(shmKey, sizeof(MasterList), 0);
+		shmid = shmget(shmKey, shmSize, 0);
+		printf("shmid: %d\n", shmid);
 		if (shmid == -1) 
 		{
 		  counter++;
@@ -71,7 +74,7 @@ int main(int argc, char* argv[])
 	}
 
 	//get message key
-	message_key = ftok (".", 'M');
+	message_key = ftok ("../../", 'M');
 	if (message_key == -1) 
 	{ 
           printf ("(CLIENT) Cannot create key!\n");
@@ -91,6 +94,7 @@ int main(int argc, char* argv[])
 	   msgmid = msgget (message_key, 0);
 	   if (msgmid == -1) 
 	   {
+		printf("msgmid == -1\n");
 		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
 		  break;	//or return 1;
 	   }

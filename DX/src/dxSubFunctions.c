@@ -9,7 +9,6 @@
 
 #include "../inc/dx.h"
 
-
 /*
 * FUNCTION: executeAction
 * PURPOSE: The function takes integer value of status and pointer to MasterList struct. Depends on the status
@@ -68,7 +67,7 @@ int executeAction(int status, MasterList* masterls)
 	  case 17:
 		//delete message queue being used between DCs and DR
 		message_key = ftok ("../../", 'M');
-		if (msgKey != -1) 
+		if (message_key != -1) 
 		{ 
 		msgctl (message_key, IPC_RMID, NULL);
   		printf ("(DX) Message QUEUE has been removed\n");

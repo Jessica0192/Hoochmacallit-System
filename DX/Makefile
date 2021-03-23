@@ -22,10 +22,10 @@
 # =======================================================
 #                     Dependencies
 # =======================================================                     
-./obj/dx.o : ./src/dx.c ./inc/dx.h
+./obj/dx.o : ./src/dx.c ./inc/dx.h ../Common/inc/common.h
 	cc -c ./src/dx.c -o ./obj/dx.o
 
-./obj/dxSubFunctions.o : ./src/dxSubFunctions.c ./inc/dx.h
+./obj/dxSubFunctions.o : ./src/dxSubFunctions.c ./inc/dx.h ../Common/inc/common.h
 	cc -c ./src/dxSubFunctions.c -o ./obj/dxSubFunctions.o
 
 #
