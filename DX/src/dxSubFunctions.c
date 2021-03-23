@@ -203,7 +203,7 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
 {
   int check = 0;
   char* dirname = "tmp";
-  char* path = "/tmp/dataCorruptor.log";
+  char* path = "./tmp/dataCorruptor.log";
   char* fullMsg = NULL;
   FILE* ofp = NULL;
 
