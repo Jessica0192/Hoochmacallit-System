@@ -139,7 +139,7 @@ int main(void)
 
 
 	printf("shmkey: %d\n", shmkey);
-	if ((shmid = shmget (shmkey, sizeof (MasterList), 0)) == -1) 
+	if ((shmid = shmget (shmkey, sizeof (MasterList) - sizeof(long), 0)) == -1) 
 	{
 
 		/*
@@ -147,7 +147,7 @@ int main(void)
 		 */
 
 		printf ("(PRODUCER) No Shared-Memory currently available - so create!\n");
-		shmid = shmget (shmid, sizeof (MasterList), IPC_CREAT | 0660);
+		shmid = shmget (shmkey, sizeof (MasterList)- sizeof(long), IPC_CREAT | 0660);
 		//address of the shared memory
 		//addr = shmat(shmid,NULL,0);
 		if (shmid == -1) 
