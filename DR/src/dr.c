@@ -27,7 +27,7 @@ int main(void)
 	int mid; // message queue ID
 	int sizeofdata;
 	int continueToRun = 1;
-	int DC_pids[10] = {0}; //local variable where we'll be saving DCs' pids.
+	int DC_pids[MAX_DC_ROLES] = {0}; //local variable where we'll be saving DCs' pids.
 	//and the array indexes will be their IDs
 	time_t rawtime; //to keep track of time
     	struct tm* timeinfo;
@@ -427,7 +427,7 @@ int main(void)
 			localNumDCs++;
 
 			//we need to make sure that no more than 10 DCs can talk to us
-			if (localNumDCs <= 10)
+			if (localNumDCs <= MAX_DC_ROLES)
 			{
 				msList->numberOfDCs = localNumDCs;
 				time_t t = time(NULL);
@@ -458,7 +458,7 @@ int main(void)
 			}
 			else
 			{	//if there are more than 10 DCs, we simply ignore them, 
-				localNumDCs = 10; //allowing only 10 machines to talk to us
+				localNumDCs = MAX_DC_ROLES; //allowing only 10 machines to talk to us
 			}
 		}
 		else if (rc >= 0)//check if the return code of msgget() indicates we received a message
@@ -466,7 +466,7 @@ int main(void)
 			int cur_dc_id = 0;
 			
 			//searching for the current DC's id 
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < MAX_DC_ROLES; i++)
 			{
 				if (DC_pids[i] == incom_msg.machinePID)
 				{//set the current DC's id
