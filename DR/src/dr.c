@@ -17,7 +17,6 @@
 * it frees up the message queue, releases its shared memory and terminates.
 */
 
-#pragma warning (disable: 4996)
 #include "../inc/dr.h"
 
 int main(void)

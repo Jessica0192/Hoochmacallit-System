@@ -1,16 +1,16 @@
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <sys/shm.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+/*
+* FILE          : dx.h
+* PROJECT       : PROG2121 - Assignment #3
+* PROGRAMMER    : Jessica Sim
+* FIRST VERSION : 2020-03-14
+* DESCRIPTION   :
+* This file contains all the #includes, constants and function prototypes
+* that the data reader program uses.
+*/
 
+#include <sys/types.h>
 #include <signal.h>
+
 #include "../../Common/inc/common.h"
 
 #define TYPE_SERVERMESSAGE 1
