@@ -15,6 +15,8 @@
 * PURPOSE: The function takes integer value of status and pointer to MasterList struct. Depends on the status
 * I get, it does the corresponding action. For example, it kills the specific DC application or delete the message
 * queue
+* INPUTS: int status - integer value of status
+	  MasterList* masterls - pointer to a struct, MasterList
 * RETURNS: int - returns the status if the creating the log message succeed or not
 */
 int executeAction(int status, MasterList* masterls)
@@ -32,6 +34,7 @@ int executeAction(int status, MasterList* masterls)
 	  case 8:
 	  case 19:
 		//do nothing
+		retVal=createLogMsgWOD(0, status, 0, "Do nothing");
 		break;
 	  case 1:
 	  case 4:
@@ -272,6 +275,10 @@ int executeAction(int status, MasterList* masterls)
 * FUNCTION: createLogMsgWOD
 * PURPOSE: The function takes pid of DC application, number of the action that has executed, number of DC application,
 * and message that is going to be written in the log file. 
+* INPUTS: pid_t pid - pid of current DC application
+	  int actionNum - action number
+	  int dcNum - dc application number
+          char* msg - pointer to char array that contains message which will be sent to server
 * RETURNS: int - returns if writing log message is succeed or not
 */
 int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
@@ -320,10 +327,15 @@ if( access( path, F_OK ) == 0 ) {
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, msg);
   }
-  else if(pid == 0 && actionNum == 0 && dcNum == 0)
+  else if(pid == 0 && actionNum == 21 && dcNum == 0)
   {
     fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : %s\n",
 	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, msg);
+  }
+  else if(pid == 0 && actionNum ==0 && dcNum ==0 )
+  {
+    fprintf(ofp, "[%04d-%02d-%02d %02d:%02d:%02d] : WOD Action %02d - %s\n",
+	 T.tm_year+1900, T.tm_mon+1, T.tm_mday, T.tm_hour, T.tm_min, T.tm_sec, actionNum, msg);
   }
   else
   {

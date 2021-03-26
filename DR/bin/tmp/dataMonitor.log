@@ -1,0 +1,26 @@
+[2021-03-26 16:45:26] DC- 0 [2381] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:45:38] DC- 1 [2401] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:45:40] DC- 0 [2381] has gone OFFLINE - removing from the master list
+[2021-03-26 16:45:48] DC- 0 [2401] updated in the master list - MSG RECEIVED  - Status 02 (Safety Button Failure)
+[2021-03-26 16:45:58] DC- 0 [2401] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-26 16:46:08] DC- 1 [2445] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:46:09] DC- 0 [2401] updated in the master list - MSG RECEIVED  - Status 00 (Everything is OKAY)
+[2021-03-26 16:46:20] DC- 0 [2401] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-26 16:46:28] DC- 1 [2445] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-26 16:46:49] DC- 0 [2401] has gone OFFLINE - removing from the master list
+[2021-03-26 16:46:50] DC- 1 [2488] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:46:57] DC- 0 [2445] updated in the master list - MSG RECEIVED  - Status 05 (Operator Error)
+[2021-03-26 16:47:09] DC- 1 [2488] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-26 16:47:17] DC- 2 [2704] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:47:20] DC- 0 [2445] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-26 16:47:35] DC- 2 [2704] updated in the master list - MSG RECEIVED  - Status 00 (Everything is OKAY)
+[2021-03-26 16:47:39] DC- 0 [2445] updated in the master list - MSG RECEIVED  - Status 04 (Operating Temparature Out of Range)
+[2021-03-26 16:47:47] DC- 3 [2737] added to the master list - NEW DC  - Status 0 (Everything is OKAY)
+[2021-03-26 16:47:53] DC- 1 [2488] removed from the master list - NON-RESPONSIVE
+[2021-03-26 16:47:57] DC- 2 [2737] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-26 16:48:01] DC- 0 [2445] updated in the master list - MSG RECEIVED  - Status 03 (No Raw Material in the Process)
+[2021-03-26 16:48:14] DC- 1 [2704] removed from the master list - NON-RESPONSIVE
+[2021-03-26 16:48:22] DC- 1 [2737] has gone OFFLINE - removing from the master list
+[2021-03-26 16:48:23] DC- 0 [2445] updated in the master list - MSG RECEIVED  - Status 00 (Everything is OKAY)
+[2021-03-26 16:48:59] DC- 0 [2445] removed from the master list - NON-RESPONSIVE
+All DCs have gone offline or terminated – DR TERMINATING

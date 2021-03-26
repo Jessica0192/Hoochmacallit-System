@@ -1,0 +1,5 @@
+[2021-03-26 16:47:13] : WOD Action 03 - DC-02 [2488] TERMINATED
+[2021-03-26 16:47:49] : WOD Action 15 - DC-03 [2704] TERMINATED
+[2021-03-26 16:48:05] : WOD Action 00 - Do nothing
+[2021-03-26 16:48:28] : WOD Action 04 - DC-01 [2445] TERMINATED
+[2021-03-26 16:49:11] : DX detected that msgQ is gone - assuming DR/DCs done

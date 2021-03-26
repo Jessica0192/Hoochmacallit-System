@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	   if (msgmid == -1) 
 	   {
 		//printf("msgmid == -1\n");
-		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
+		createLogMsgWOD(0, 21, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
 		if(shmdt(p) == -1)
 		{
 			return -1;
