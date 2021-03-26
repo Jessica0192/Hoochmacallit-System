@@ -1,7 +1,7 @@
 
 /*
 * FILE          : dr.c
-* PROJECT       : PROG2121 - Assignment #3
+* PROJECT       : SENG2030 - Assignment #3
 * PROGRAMMER    : Maria Malinina
 * FIRST VERSION : 2020-03-14
 * DESCRIPTION   :
