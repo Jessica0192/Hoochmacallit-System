@@ -1,19 +1,16 @@
 #
 # FILE: Makefile
 # PROJECT: A3
-# PROGRAMMER: JESSICA SIM
-# FIRST VERSION: 2021-01-25
+# PROGRAMMER: JESSICA SIM, MARIA MALININA
+# FIRST VERSION: 2021-03-20
 # DESCRIPTION: This file is a Makefile to compile all the source codes. It also has ability to 
 # clean bin and obj directory
-#
-
-#
 # this makefile will compile and and all source
-# found in the "DC" directory.  This represents a sample
+# found in the project directory.  This represents a sample
 # development directory structure and project
 # 
 # =======================================================
-#                  DC Example
+#                 DR, DC, DX Example
 # =======================================================
 # FINAL BINARY Target
 all:
