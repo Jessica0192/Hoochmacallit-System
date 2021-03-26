@@ -40,10 +40,12 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[0].dcProcessID;
 		if(masterls->numberOfDCs > 0)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
@@ -58,10 +60,12 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[2].dcProcessID;
 		if(masterls->numberOfDCs > 2)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
@@ -76,10 +80,12 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[1].dcProcessID;
 		if(masterls->numberOfDCs > 1)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
@@ -90,40 +96,46 @@ int executeAction(int status, MasterList* masterls)
 	  case 10:
 	  case 17:
 		//delete message queue being used between DCs and DR
+
 		message_key = ftok ("../../", 'M');
 		if (message_key != -1) 
-		{ 
+		{
+		//get message queue id
 		mid = msgget (message_key, 0);
     		if (mid == -1) 
     		{
-        		//printf ("(SERVER) ERROR: MEssage queue doesn't exist\n");
-        		//fflush (stdout);
+
         		break;
     		}
+		//remove message queue
 		int val = msgctl (mid, IPC_RMID, NULL);
-  		//printf ("(DX) Message QUEUE has been removed\n");
-  		//fflush (stdout);
+		//log message
 		retVal=createLogMsgWOD(0, status, 0, "DX deleted the msgQ - the DR/DCs can't talk anymore - exiting");
-		if(-1 == shmdt(masterls))
+
+		//detaching from shared memory
+		if(shmdt(masterls)==-1)
 		{
 			retVal=2;
+			break;
 		}
 		exit(0);
 		}
-		break;
 	  case 7:
 	 	//kill DC-04 if exists
 		pid = masterls->dc[3].dcProcessID;
 		if(masterls->numberOfDCs > 3)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 4, "TERMINATED");
 		}
 		break;
@@ -132,14 +144,17 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[4].dcProcessID;
 		if(masterls->numberOfDCs > 4)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 5, "TERMINATED");
 		}
 
@@ -149,14 +164,17 @@ int executeAction(int status, MasterList* masterls)
 		pid =masterls->dc[5].dcProcessID;
 		if(masterls->numberOfDCs > 5)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 6, "TERMINATED");
 		}
 		break;
@@ -165,14 +183,17 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[6].dcProcessID;
 		if(masterls->numberOfDCs > 6)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 7, "TERMINATED");
 		}
 
@@ -182,14 +203,17 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[7].dcProcessID;
 		if(masterls->numberOfDCs > 7)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 8, "TERMINATED");
 		}
 
@@ -199,14 +223,17 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[8].dcProcessID;
 		if(masterls->numberOfDCs > 8)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 9, "TERMINATED");
 		}
 		break;
@@ -215,14 +242,17 @@ int executeAction(int status, MasterList* masterls)
 		pid = masterls->dc[9].dcProcessID;
 		if(masterls->numberOfDCs > 9)
 		{
+		   //send SIGHUP signal to specific process
 		   if(kill(pid, SIGHUP) == -1)
 		   {
 			break;
 		   }
+		   //kill process
 		   if(kill(pid, SIGKILL)==-1)
 		   {
 			break;
 		   }
+		//log message
 		   retVal=createLogMsgWOD(pid, status, 10, "TERMINATED");
 		}
 		break;
@@ -259,7 +289,7 @@ int createLogMsgWOD(pid_t pid, int actionNum, int dcNum, char* msg)
   }
   if (check == -1){
       	//printf("Unable to create directory\n"); 
-        exit(1); 
+        return 1; 
   }
 
 if( access( path, F_OK ) == 0 ) {

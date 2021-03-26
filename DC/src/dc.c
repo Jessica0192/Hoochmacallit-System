@@ -15,7 +15,6 @@
 
 int main(int argc, char* argv[])
 {
- //DCMessage dcmsg;
  MasterList* msList;
 
  key_t msgKey;	//message key
@@ -61,12 +60,14 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	//seed
+ 	srand ( time(NULL) );
+
  	//main process loop
 	 while(1)
 	 {
 	   counter++;
 	   iStatus = 0;
- 	   srand ( time(NULL) );
 	   //get the pid of the current DC application
 	   machinePID = getpid();  				//dcmsg.machinePID
 	   //to check if the first time that current DC is connected
@@ -74,8 +75,10 @@ int main(int argc, char* argv[])
 	   {   
 	     //set iStatus to 0 because it is a first time connecting
 	     iStatus = 0;
+
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
+
 	     //send message
 	     if(send_message(mid, machinePID, msg) == 1)
 	     {
@@ -87,8 +90,10 @@ int main(int argc, char* argv[])
 	   {
 	     //get random number of status between 0 to 6
 	     iStatus = rand() % 7;
+
 	     //get the message corresponding of the status
 	     msg = getStatus(iStatus);				//dcmsg.msg
+
 	     //send message
 	     if(send_message(mid, machinePID, msg) == 1)
 	     {
@@ -97,12 +102,14 @@ int main(int argc, char* argv[])
 	   }
 	   //create log message after sending message
 	   createLog(iStatus, machinePID, msg);
+
 	   //if the status was 6, terminates the current application
 	   if(iStatus == 6)
 	   {
 	     //kill(pid, SIGKILL);
              break;
            }
+
 	   //get random number from 10 to 30
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
 	   //go to sleep for amount of randSleep 

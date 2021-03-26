@@ -41,12 +41,13 @@ int main(int argc, char* argv[])
 	  //fflush (stdout);
 	  return 0;
 	}
+
 	shmSize = sizeof(MasterList) - sizeof(long);
+
 	// check if shared memory exists
 	while(1)
 	{
 		shmid = shmget(shmKey, shmSize, 0);
-		//printf("shmid: %d\n", shmid);
 		if (shmid == -1) 
 		{
 		  counter++;
@@ -81,10 +82,14 @@ int main(int argc, char* argv[])
 	  return 0;
 	}
 
+	//seed
+        srand ( time(NULL) );
+
+
  	//main process loop
 	 while(1)
 	 {
-           srand ( time(NULL) );
+
 	   //get random amount of time
 	   randSleep = (rand() % (30 - 10 + 1)) + 10;
 	   //go to sleep for random amount of time(between 10 and 30 secs)
@@ -96,7 +101,7 @@ int main(int argc, char* argv[])
 	   {
 		//printf("msgmid == -1\n");
 		createLogMsgWOD(0, 0, 0, "DX detected that msgQ is gone - assuming DR/DCs done");
-		if(-1 == shmdt(p))
+		if(shmdt(p) == -1)
 		{
 			return -1;
 		}
@@ -104,11 +109,16 @@ int main(int argc, char* argv[])
 	   }
 
 	   //get random number of action(Wheel of Destruction)
-           srand ( time(NULL) );
 	   iStatus = rand() % 21;
+
+	   //pass the random number to a function that executes the certain action
 	   retVal = executeAction(iStatus, p);
 	   if(retVal == 1 || retVal == 2)
 	   {
+		if(shmdt(p) == -1)
+		{
+			return -1;
+		}
 		return 1;
 	   }
 	 }
