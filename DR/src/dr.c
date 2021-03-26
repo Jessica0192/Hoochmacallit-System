@@ -1,7 +1,7 @@
 /*
 * FILE: dc.c
-* PROJECT: A3
-* PROGRAMMER: JESSICA SIM
+* PROJECT: SENG2030 - Assignment #3
+* PROGRAMMER: MARIA MALININA
 * FIRST VERSION: 2021-03-11
 * DESCRIPTION: This program creates the message key with the specific key('M') and check if the message queue is 
 * existing with the key just created. If the message queue is not existing, wait until it is created. 
