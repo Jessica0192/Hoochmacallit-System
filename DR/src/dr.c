@@ -253,7 +253,7 @@ int main(void)
 					howManySec = 0; //reset
 					
 					//get the DC's id into the string object
-					sprintf(strCount, "%d", removalID);
+					sprintf(strCount, "%d", removalID + 1);
 
 					//get the process id into the string object
 					sprintf(strProcessID, "%d",DC_pids[removalID]);
@@ -367,7 +367,7 @@ int main(void)
 			msList->numberOfDCs = localNumDCs;
 			howManySec = 0; //reset
 			//set the removal ID to the string object that we'll use to 
-			sprintf(strCount, "%d", removalID); //output the DC's id in the log file
+			sprintf(strCount, "%d", removalID + 1); //output the DC's id in the log file
 
 			//and set the process id string object
 			sprintf(strProcessID, "%d",DC_pids[removalID]);
@@ -391,7 +391,7 @@ int main(void)
 		  {
 
 			//set the string object that will indicate the DC's id
-			sprintf(strCount, "%d", msList->numberOfDCs);
+			sprintf(strCount, "%d", msList->numberOfDCs + 1);
 
 			int iterator = 0;
 			if (localNumDCs != 0){
@@ -435,7 +435,7 @@ int main(void)
 				fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 				fprintf(log_stream, "] ");
 				strcpy(new_dc_log, "DC- ");
-				sprintf(strCount, "%d", (localNumDCs-1));
+				sprintf(strCount, "%d", (localNumDCs));
 				strcat(new_dc_log, strCount); //DC's id
 				strcat(new_dc_log, " [");
 				strcat(new_dc_log, strProcessID); //DC's pid
@@ -480,7 +480,7 @@ int main(void)
 			time_t t = time(NULL);
 		    	struct tm tm = *localtime(&t);
 
-			sprintf(strCount, "%d", (cur_dc_id)); //put the DC's ID in the string object
+			sprintf(strCount, "%d", (cur_dc_id + 1)); //put the DC's ID in the string object
 			strcat(upd_dc_log, strProcessID); //put the DC's process ID in the string object
 			msList->dc[cur_dc_id].lastTimeHeardFrom.time = 0; //set lastTimeHeardFrom to 0 
 			//since we are now talking to that DC
@@ -522,7 +522,7 @@ int main(void)
 				fprintf(log_stream, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 				fprintf(log_stream, "] ");
 				strcpy(upd_dc_log, "DC- ");
-				sprintf(strCount, "%d", (cur_dc_id));
+				sprintf(strCount, "%d", (cur_dc_id + 1));
 				strcat(upd_dc_log, strCount); //DC's id
 				strcat(upd_dc_log, " [");
 				strcat(upd_dc_log, strProcessID); //DC's pid
@@ -593,5 +593,4 @@ int main(void)
 
 	return 0;
 }
-
 
