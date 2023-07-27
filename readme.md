@@ -7,8 +7,8 @@ The content of this repository is an academic project and should not be made pub
 
 
 ## Technology Stack
-Linux
-C
+* C
+* UNIX/Linux
 
 ## Programs
 ### Data Creator (DC) Application
